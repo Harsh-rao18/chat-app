@@ -32,4 +32,17 @@ final ThemeData theme = ThemeData(
       ),
     ),
   ),
+
+  navigationBarTheme: const NavigationBarThemeData(
+    labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+    height: 60,
+    indicatorColor: Colors.transparent,
+    backgroundColor: Colors.black,
+    iconTheme: WidgetStatePropertyAll<IconThemeData>(
+      IconThemeData(
+        color: Colors.white,
+        size: 27
+      )
+    ),
+  ),
 );
