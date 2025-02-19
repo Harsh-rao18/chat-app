@@ -8,6 +8,11 @@ import 'package:application_one/feature/auth/domain/usecase/sign_in_usecase.dart
 import 'package:application_one/feature/auth/domain/usecase/sign_out_usecase.dart';
 import 'package:application_one/feature/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
+import 'package:application_one/feature/profile/data/datasource/storage_remote_datasource.dart';
+import 'package:application_one/feature/profile/data/repository/storage_repository_impl.dart';
+import 'package:application_one/feature/profile/domain/repository/storege_repository.dart';
+import 'package:application_one/feature/profile/domain/usecase/upload_profile_usecase.dart';
+import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,6 +25,7 @@ Future<void> initDependency() async {
   servicelocator.registerLazySingleton(() => supabase.client);
   servicelocator.registerLazySingleton(() => AppUserCubit());
   _initAuth();
+  _profile();
 }
 
 void _initAuth() {
@@ -63,6 +69,30 @@ void _initAuth() {
       currentUserUsecase: servicelocator(),
       appUserCubit: servicelocator(),
       signOutUsecase: servicelocator(),
+    ),
+  );
+}
+
+void _profile() {
+  servicelocator.registerFactory<StorageRemoteDataSource>(
+    () => StorageRemoteDataSourceImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory<StorageRepository>(
+    () => StorageRepositoryImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => UploadProfileUsecase(
+      servicelocator(),
+    ),
+  );
+
+  servicelocator.registerLazySingleton(
+    () => ProfileBloc(
+      profileUsecase: servicelocator(),
     ),
   );
 }

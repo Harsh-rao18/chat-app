@@ -3,6 +3,7 @@ import 'package:application_one/core/common/cubit/app_user_cubit.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/auth/presentation/views/login_page.dart';
 import 'package:application_one/feature/main_page.dart';
+import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:application_one/init_dependency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ void main() async {
     providers: [
       BlocProvider(create: (_) => servicelocator<AuthBloc>()),
       BlocProvider(create: (_) => servicelocator<AppUserCubit>()),
+      BlocProvider(create: (_) => servicelocator<ProfileBloc>()),
     ],
     child: const MyApp(),
   ));
