@@ -11,6 +11,7 @@ import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/profile/data/datasource/storage_remote_datasource.dart';
 import 'package:application_one/feature/profile/data/repository/storage_repository_impl.dart';
 import 'package:application_one/feature/profile/domain/repository/storege_repository.dart';
+import 'package:application_one/feature/profile/domain/usecase/pick_and_compress_image_usecase.dart';
 import 'package:application_one/feature/profile/domain/usecase/upload_profile_usecase.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -85,6 +86,11 @@ void _profile() {
     ),
   );
   servicelocator.registerFactory(
+    () => PickAndCompressImageUseCase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
     () => UploadProfileUsecase(
       servicelocator(),
     ),
@@ -93,6 +99,7 @@ void _profile() {
   servicelocator.registerLazySingleton(
     () => ProfileBloc(
       profileUsecase: servicelocator(),
+      pickAndCompressImageUseCase: servicelocator(),
     ),
   );
 }

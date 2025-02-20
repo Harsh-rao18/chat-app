@@ -1,6 +1,8 @@
 import 'package:application_one/feature/profile/presentation/pages/edit_profile.dart';
 import 'package:application_one/feature/profile/presentation/pages/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:application_one/feature/profile/presentation/widgets/image_circle.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,17 +12,41 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? _name;
+  String? _description;
+  String? _imageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+
+    final metadata = user.userMetadata; // Fetch user metadata
+
+    setState(() {
+      _name = metadata?['name'] ?? 'User';
+      _description = metadata?['description'] ?? 'No description available';
+      _imageUrl = metadata?['image']; // May be null
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Settings()));
-              },
-              icon: const Icon(Icons.settings))
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Settings()));
+            },
+            icon: const Icon(Icons.settings),
+          )
         ],
       ),
       body: DefaultTabController(
@@ -39,60 +65,62 @@ class _ProfilePageState extends State<ProfilePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Flexible(
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundImage:
-                                  AssetImage('assets/images/avatar.png'),
-                            ),
-                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 15),
+                            child: ImageCircle(radius: 40, url: _imageUrl),
+                          ), // ✅ Show user image
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Harsh',
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
+                                Text(
+                                  _name ?? 'Loading...',
+                                  style: const TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
+                                const SizedBox(height: 5),
                                 SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.70,
-                                  child: const Text('Hey i love coding!'),
+                                  width: MediaQuery.of(context).size.width * 0.70,
+                                  child: Text(_description ?? 'Loading...'),
                                 ),
                               ],
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
                       Flexible(
                         child: Row(
                           children: [
                             Expanded(
-                                child: OutlinedButton(
-                                    onPressed: () {
-                                      Navigator.push(context, MaterialPageRoute(
-                                        builder: (context) {
-                                          return const EditProfile();
-                                        },
-                                      ));
-                                    },
-                                    style: ButtonStyle(
-                                      shape: WidgetStatePropertyAll(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
+                              child: OutlinedButton(
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const EditProfile(),
                                     ),
-                                    child: const Text('Edit Profile'))),
-                            const SizedBox(
-                              width: 20,
+                                  );
+
+                                  if (result == true) {
+                                    setState(() {
+                                      _fetchUserProfile(); // Refresh data after edit
+                                    });
+                                  }
+                                },
+                                style: ButtonStyle(
+                                  shape: WidgetStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                                child: const Text('Edit Profile'),
+                              ),
                             ),
+                            const SizedBox(width: 20),
                             Expanded(
                               child: OutlinedButton(
                                 onPressed: () {},
@@ -118,12 +146,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 floating: true,
                 delegate: SliverAppBarDelegate(
                   const TabBar(indicatorSize: TabBarIndicatorSize.tab, tabs: [
-                    Tab(
-                      text: 'Posts',
-                    ),
-                    Tab(
-                      text: 'Replies',
-                    ),
+                    Tab(text: 'Posts'),
+                    Tab(text: 'Replies'),
                   ]),
                 ),
               ),
@@ -131,12 +155,8 @@ class _ProfilePageState extends State<ProfilePage> {
           },
           body: const TabBarView(
             children: [
-              Center(
-                child: Text('Posts'),
-              ),
-              Center(
-                child: Text('Replies'),
-              ),
+              Center(child: Text('Posts')),
+              Center(child: Text('Replies')),
             ],
           ),
         ),
@@ -145,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-// SilverPersistance Header
+// SliverPersistentHeader
 class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
   SliverAppBarDelegate(this._tabBar);

@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
+import 'package:application_one/feature/profile/presentation/widgets/image_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -14,17 +16,34 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _descriptionController = TextEditingController();
   String? _imageUrl;
   String? _userId;
+  File? _selectedImage;
 
   @override
   void initState() {
     super.initState();
+    _loadUserProfile();
+  }
+
+  /// Fetch user metadata from Supabase and refresh session
+  Future<void> _loadUserProfile() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user != null) {
-      _userId = user.id;
+      await Supabase.instance.client.auth.refreshSession(); // ✅ Corrected method
+      setState(() {
+        _userId = user.id;
+        _imageUrl = user.userMetadata?['image']; // Fetch profile image URL
+        _descriptionController.text = user.userMetadata?['description'] ?? '';
+      });
     }
   }
 
-  void _uploadImage() {
+  /// Picks and compresses an image
+  void _pickImage() {
+    context.read<ProfileBloc>().add(PickAndCompressImageEvent());
+  }
+
+  /// Uploads profile changes
+  void _uploadProfile() {
     if (_userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("User not logged in!")),
@@ -33,7 +52,11 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     final description = _descriptionController.text;
-    context.read<ProfileBloc>().add(ProfileUploadEvent(_userId!, description));
+    context.read<ProfileBloc>().add(ProfileUploadEvent(
+          userId: _userId!,
+          description: description,
+          file: _selectedImage,
+        ));
   }
 
   @override
@@ -45,7 +68,7 @@ class _EditProfileState extends State<EditProfile> {
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: ElevatedButton(
-              onPressed: _uploadImage,
+              onPressed: _uploadProfile,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 32, 31, 31),
                 foregroundColor: Colors.white,
@@ -62,23 +85,32 @@ class _EditProfileState extends State<EditProfile> {
         ],
       ),
       body: BlocListener<ProfileBloc, ProfileState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is ProfileLoading) {
             showDialog(
               context: context,
               barrierDismissible: false,
               builder: (_) => const Center(child: CircularProgressIndicator()),
             );
-          } else if (state is ProfileUploaded) {
-            Navigator.pop(context);
+          } else if (state is ProfileImagePicked) {
+            Navigator.pop(context); // Close loading dialog
             setState(() {
-              _imageUrl = state.imageUrl;
+              _selectedImage = state.file;
             });
+          } else if (state is ProfileUploaded) {
+            Navigator.pop(context); // Close loading dialog
+
+            // ✅ Refresh Supabase session to get updated metadata
+            await Supabase.instance.client.auth.refreshSession();
+
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Profile updated successfully!")),
             );
+
+            // ✅ Navigate back and signal update
+            Navigator.pop(context, true);
           } else if (state is ProfileError) {
-            Navigator.pop(context);
+            Navigator.pop(context); // Close loading dialog
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
             );
@@ -92,22 +124,22 @@ class _EditProfileState extends State<EditProfile> {
               Stack(
                 alignment: Alignment.bottomRight,
                 children: [
-                  CircleAvatar(
+                  /// Using `ImageCircle` widget to show the picked image or fallback to metadata/default avatar
+                  ImageCircle(
                     radius: 80,
-                    backgroundImage: _imageUrl != null
-                        ? NetworkImage(_imageUrl!)
-                        : const AssetImage('assets/images/avatar.png') as ImageProvider,
+                    file: _selectedImage, // Show picked image if available
+                    url: _imageUrl, // Show metadata image if available
                   ),
                   Positioned(
                     bottom: 8,
                     right: 8,
                     child: InkWell(
-                      onTap: _uploadImage,
+                      onTap: _pickImage, // Opens the image picker
                       borderRadius: BorderRadius.circular(20),
-                      child: CircleAvatar(
+                      child: const CircleAvatar(
                         radius: 22,
-                        backgroundColor: const Color.fromARGB(255, 32, 31, 31),
-                        child: const Icon(Icons.edit, color: Colors.white, size: 20),
+                        backgroundColor: Color.fromARGB(255, 32, 31, 31),
+                        child: Icon(Icons.edit, color: Colors.white, size: 20),
                       ),
                     ),
                   ),

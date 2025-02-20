@@ -1,18 +1,22 @@
 part of 'profile_bloc.dart';
 
-@immutable
-sealed class ProfileState {}
+abstract class ProfileState {}
 
-final class ProfileInitial extends ProfileState {}
+class ProfileInitial extends ProfileState {}
 
 class ProfileLoading extends ProfileState {}
-
-class ProfileUploaded extends ProfileState {
-  final void success;
-  ProfileUploaded(this.success);
-}
 
 class ProfileError extends ProfileState {
   final String message;
   ProfileError(this.message);
+}
+
+class ProfileImagePicked extends ProfileState {
+  final File file;
+  ProfileImagePicked(this.file);
+}
+
+class ProfileUploaded extends ProfileState {
+  final String imageUrl;
+  ProfileUploaded(this.imageUrl);
 }

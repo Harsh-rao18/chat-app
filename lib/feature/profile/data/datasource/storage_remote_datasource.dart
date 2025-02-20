@@ -7,8 +7,8 @@ import 'package:uuid/uuid.dart';
 abstract interface class StorageRemoteDataSource {
   Future<File?> pickImage();
   Future<File?> compressImage(File file);
-  Future<String> uploadImage(String userId, File file);
-  Future<void> updateUserProfile(String userId, String description, String? imageUrl);
+  Future<String> uploadImage(String userId, File? file);
+  Future<String> updateUserProfile(String userId, String description, String? imageUrl);
 }
 
 class StorageRemoteDataSourceImpl implements StorageRemoteDataSource {
@@ -39,20 +39,22 @@ class StorageRemoteDataSourceImpl implements StorageRemoteDataSource {
   }
 
   @override
-  Future<String> uploadImage(String userId, File file) async {
+  Future<String> uploadImage(String userId, File? file) async {
     final filename = 'users/$userId/profile.jpg';
     await supabaseClient.storage
         .from('bucket_h1')
-        .upload(filename, file, fileOptions: const FileOptions(upsert: true));
+        .upload(filename, file!, fileOptions: const FileOptions(upsert: true));
 
     return supabaseClient.storage.from('bucket_h1').getPublicUrl(filename);
   }
 
-  @override
-  Future<void> updateUserProfile(String userId, String description, String? imageUrl) async {
-    await supabaseClient.auth.updateUser(UserAttributes(data: {
-      "description": description,
-      "image": imageUrl ?? "",
-    }));
-  }
+@override
+Future<String> updateUserProfile(String userId, String description, String? imageUrl) async {
+  await supabaseClient.auth.updateUser(UserAttributes(data: {
+    "description": description,
+    "image": imageUrl ?? "",
+  }));
+
+  return imageUrl ?? ""; // ✅ Ensure a String is always returned
+}
 }

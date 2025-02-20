@@ -25,15 +25,15 @@ class StorageRepositoryImpl implements StorageRepository {
   }
 
   @override
-  Future<Either<Failure, void>> uploadImageAndUpdateProfile({
+  Future<Either<Failure, String>> uploadImageAndUpdateProfile({
     required String userId,
     required String description,
-    required File file,
+    File? file,
   }) async {
     try {
-      final imageUrl = await remoteDataSource.uploadImage(userId, file);
-      await remoteDataSource.updateUserProfile(userId, description, imageUrl);
-      return right(null);
+      final image = await remoteDataSource.uploadImage(userId, file!);
+      final imageUrl = await remoteDataSource.updateUserProfile(userId, description, image);
+      return right(imageUrl);
     } catch (e) {
       return left(Failure(e.toString()));
     }

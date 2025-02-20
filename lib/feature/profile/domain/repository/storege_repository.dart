@@ -3,10 +3,14 @@ import 'package:application_one/core/error/failure.dart';
 import 'package:fpdart/fpdart.dart';
 
 abstract interface class StorageRepository {
+  
+  /// Picks an image from the gallery and compresses it.
   Future<Either<Failure, File>> pickAndCompressImage();
-  Future<Either<Failure, void>> uploadImageAndUpdateProfile({
+
+  /// Uploads an image to Supabase and updates the user profile.
+  Future<Either<Failure, String>> uploadImageAndUpdateProfile({
     required String userId,
     required String description,
-    required File file,
+    File? file,
   });
 }

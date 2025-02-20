@@ -1,10 +1,17 @@
 part of 'profile_bloc.dart';
 
-@immutable
-sealed class ProfileEvent {}
+abstract class ProfileEvent {}
+
+class PickAndCompressImageEvent extends ProfileEvent {}
 
 class ProfileUploadEvent extends ProfileEvent {
   final String userId;
   final String description;
-  ProfileUploadEvent(this.userId, this.description);
+  final File? file;
+
+  ProfileUploadEvent({
+    required this.userId,
+    required this.description,
+    this.file,
+  });
 }
