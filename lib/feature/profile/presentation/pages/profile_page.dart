@@ -1,8 +1,8 @@
+import 'package:application_one/core/utils/image_circle.dart';
 import 'package:application_one/feature/profile/presentation/pages/edit_profile.dart';
 import 'package:application_one/feature/profile/presentation/pages/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:application_one/feature/profile/presentation/widgets/image_circle.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -82,8 +82,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 const SizedBox(height: 5),
                                 SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.70,
-                                  child: Text(_description ?? 'Loading...'),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.70,
+                                  child: Text(
+                                    _description ?? 'Loading...',
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),

@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:application_one/core/utils/image_circle.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
-import 'package:application_one/feature/profile/presentation/widgets/image_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

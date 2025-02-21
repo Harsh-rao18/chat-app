@@ -8,6 +8,11 @@ import 'package:application_one/feature/auth/domain/usecase/sign_in_usecase.dart
 import 'package:application_one/feature/auth/domain/usecase/sign_out_usecase.dart';
 import 'package:application_one/feature/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
+import 'package:application_one/feature/post/data/datasource/post_remote_data_source.dart';
+import 'package:application_one/feature/post/data/repository/post_repository_impl.dart';
+import 'package:application_one/feature/post/domain/repository/post_repository.dart';
+import 'package:application_one/feature/post/domain/usecase/post_pick_Image_use_case.dart';
+import 'package:application_one/feature/post/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/profile/data/datasource/storage_remote_datasource.dart';
 import 'package:application_one/feature/profile/data/repository/storage_repository_impl.dart';
 import 'package:application_one/feature/profile/domain/repository/storege_repository.dart';
@@ -27,6 +32,7 @@ Future<void> initDependency() async {
   servicelocator.registerLazySingleton(() => AppUserCubit());
   _initAuth();
   _profile();
+  _post();
 }
 
 void _initAuth() {
@@ -102,4 +108,15 @@ void _profile() {
       pickAndCompressImageUseCase: servicelocator(),
     ),
   );
+}
+
+void _post() {
+  servicelocator
+      .registerFactory<PostRemoteDataSource>(() => PostRemoteDataSourceImpl());
+  servicelocator.registerFactory<PostRepository>(
+      () => PostRepositoryImpl(servicelocator()));
+  servicelocator.registerFactory(() => PostPickImageUseCase(servicelocator()));
+
+  servicelocator.registerLazySingleton(
+      () => PostBloc(pickImageUseCase: servicelocator()));
 }
