@@ -2,6 +2,7 @@ import 'package:application_one/core/Theme/theme.dart';
 import 'package:application_one/core/common/cubit/app_user_cubit.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/auth/presentation/views/login_page.dart';
+import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/main_page.dart';
 import 'package:application_one/feature/post/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
@@ -18,6 +19,7 @@ void main() async {
       BlocProvider(create: (_) => servicelocator<AppUserCubit>()),
       BlocProvider(create: (_) => servicelocator<ProfileBloc>()),
       BlocProvider(create: (_) => servicelocator<PostBloc>()),
+      BlocProvider(create: (_) => servicelocator<HomeBloc>()),
     ],
     child: const MyApp(),
   ));

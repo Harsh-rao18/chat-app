@@ -1,5 +1,6 @@
+import 'package:application_one/core/common/entities/user.dart';
 import 'package:application_one/core/error/exception.dart';
-import 'package:application_one/feature/auth/data/model/user_model.dart';
+import 'package:application_one/core/common/model/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class AuthRemoteDataSource {
@@ -42,8 +43,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return UserModel(
         id: res.user!.id,
-        name: res.user!.userMetadata?['name'] ?? '',
         email: res.user!.email ?? '',
+        metadata: Metadata.fromMap(res.user!.userMetadata ?? {}),
+        createdAt: res.user!.createdAt, // No need for toIso8601String()
       );
     } on AuthException catch (e) {
       throw ServerException(e.message);
@@ -71,8 +73,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return UserModel(
         id: res.user!.id,
-        name: res.user!.userMetadata?['name'] ?? '',
         email: res.user!.email ?? '',
+        metadata: Metadata.fromMap(res.user!.userMetadata ?? {}),
+        createdAt: res.user!.createdAt,
       );
     } on AuthException catch (e) {
       throw ServerException(e.message);
@@ -91,9 +94,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         final userData = await supabaseClient
             .from('users')
             .select()
-            .eq('id', currentUserSession!.user.id);
-        return UserModel.fromJson(userData.first).copyWith(
+            .eq('id', currentUserSession!.user.id)
+            .maybeSingle();
+
+        if (userData == null) return null;
+
+        return UserModel.fromMap(userData).copyWith(
           email: currentUserSession!.user.email,
+          metadata: Metadata.fromMap(userData['metadata'] ?? {}),
+          createdAt: currentUserSession!.user.createdAt, // Directly using the string
         );
       }
       return null;
@@ -107,8 +116,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> signOutCurrentUser() async {
     try {
-      final user = await supabaseClient.auth.signOut();
-      return user;
+      await supabaseClient.auth.signOut();
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {

@@ -8,6 +8,11 @@ import 'package:application_one/feature/auth/domain/usecase/sign_in_usecase.dart
 import 'package:application_one/feature/auth/domain/usecase/sign_out_usecase.dart';
 import 'package:application_one/feature/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
+import 'package:application_one/feature/home/data/datasource/home_remote_data_source.dart';
+import 'package:application_one/feature/home/data/repository/home_reppository_impl.dart';
+import 'package:application_one/feature/home/domain/repository/home_repository.dart';
+import 'package:application_one/feature/home/domain/usecase/fetch_post_usecase.dart';
+import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/post/data/datasource/post_remote_data_source.dart';
 import 'package:application_one/feature/post/data/repository/post_repository_impl.dart';
 import 'package:application_one/feature/post/domain/repository/post_repository.dart';
@@ -34,6 +39,7 @@ Future<void> initDependency() async {
   _initAuth();
   _profile();
   _post();
+  _fetchPost();
 }
 
 void _initAuth() {
@@ -129,6 +135,30 @@ void _post() {
     () => PostBloc(
       pickImageUseCase: servicelocator(),
       postUsecase: servicelocator(),
+    ),
+  );
+}
+
+void _fetchPost() {
+  servicelocator.registerFactory<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory<HomeRepository>(
+    () => HomeReppositoryImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => FetchPostUsecase(
+      servicelocator(),
+    ),
+  );
+
+  servicelocator.registerLazySingleton(
+    () => HomeBloc(
+      fetchPostUsecase: servicelocator(),
     ),
   );
 }
