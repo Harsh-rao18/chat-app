@@ -12,6 +12,7 @@ import 'package:application_one/feature/post/data/datasource/post_remote_data_so
 import 'package:application_one/feature/post/data/repository/post_repository_impl.dart';
 import 'package:application_one/feature/post/domain/repository/post_repository.dart';
 import 'package:application_one/feature/post/domain/usecase/post_pick_Image_use_case.dart';
+import 'package:application_one/feature/post/domain/usecase/upload_post_usecase.dart';
 import 'package:application_one/feature/post/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/profile/data/datasource/storage_remote_datasource.dart';
 import 'package:application_one/feature/profile/data/repository/storage_repository_impl.dart';
@@ -111,12 +112,23 @@ void _profile() {
 }
 
 void _post() {
-  servicelocator
-      .registerFactory<PostRemoteDataSource>(() => PostRemoteDataSourceImpl());
+  servicelocator.registerFactory<PostRemoteDataSource>(
+    () => PostRemoteDataSourceImpl(
+      servicelocator(),
+    ),
+  );
   servicelocator.registerFactory<PostRepository>(
-      () => PostRepositoryImpl(servicelocator()));
+    () => PostRepositoryImpl(
+      servicelocator(),
+    ),
+  );
   servicelocator.registerFactory(() => PostPickImageUseCase(servicelocator()));
+  servicelocator.registerFactory(() => UploadPostUsecase(servicelocator()));
 
   servicelocator.registerLazySingleton(
-      () => PostBloc(pickImageUseCase: servicelocator()));
+    () => PostBloc(
+      pickImageUseCase: servicelocator(),
+      postUsecase: servicelocator(),
+    ),
+  );
 }

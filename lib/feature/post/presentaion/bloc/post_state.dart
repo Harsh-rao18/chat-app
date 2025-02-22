@@ -10,6 +10,7 @@ sealed class PostState extends Equatable {
 final class PostInitial extends PostState {}
 
 class PostLoading extends PostState {}
+class PostUploaded extends PostState {}
 
 class PostError extends PostState {
   final String message;

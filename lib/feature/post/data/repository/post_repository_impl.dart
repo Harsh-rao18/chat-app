@@ -15,11 +15,24 @@ class PostRepositoryImpl implements PostRepository {
       if (image == null) return left(Failure("Image not selected"));
 
       final compressedImage = await postRemoteDataSource.compressImage(image);
-      if (compressedImage == null){
+      if (compressedImage == null) {
         return left(Failure("Image compression failed"));
       }
 
       return right(compressedImage);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> uploadPost(
+      {required String userId, required String content, File? file}) async {
+    try {
+      final image = await postRemoteDataSource.uploadImage(userId, file);
+      final post =
+          await postRemoteDataSource.uploadPostData(userId, content, image);
+      return right(post);
     } catch (e) {
       return left(Failure(e.toString()));
     }

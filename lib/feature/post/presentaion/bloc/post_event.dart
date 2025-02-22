@@ -9,4 +9,10 @@ sealed class PostEvent extends Equatable {
 
 class PickAndCompressImageEvent extends PostEvent {}
 
-class RemovePickedImageEvent extends PostEvent {}
+class PostUploadEvent extends PostEvent {
+  final String userId;
+  final String content;
+  final File? file;
+
+  const PostUploadEvent({required this.userId, required this.content,  this.file});
+}

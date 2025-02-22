@@ -4,4 +4,10 @@ import 'package:fpdart/fpdart.dart';
 
 abstract interface class PostRepository {
   Future<Either<Failure, File>> pickAndCompressImage();
+
+  Future<Either<Failure, void>> uploadPost({
+    required String userId,
+    required String content,
+    File? file,
+  });
 }
