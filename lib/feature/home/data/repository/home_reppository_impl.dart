@@ -16,4 +16,23 @@ class HomeReppositoryImpl implements HomeRepository {
       return left(Failure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> addReply(
+      {required String userId,
+      required int postId,
+      required String postUserId,
+      required String reply}) async {
+    try {
+      await homeRemoteDataSource.addReply(
+        userId: userId,
+        postId: postId,
+        postUserId: postUserId,
+        reply: reply,
+      );
+      return right(null);
+    } catch (e) {
+      return left(Failure());
+    }
+  }
 }

@@ -11,6 +11,7 @@ import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/home/data/datasource/home_remote_data_source.dart';
 import 'package:application_one/feature/home/data/repository/home_reppository_impl.dart';
 import 'package:application_one/feature/home/domain/repository/home_repository.dart';
+import 'package:application_one/feature/home/domain/usecase/add_reply_usecase.dart';
 import 'package:application_one/feature/home/domain/usecase/fetch_post_usecase.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/post/data/datasource/post_remote_data_source.dart';
@@ -156,9 +157,16 @@ void _fetchPost() {
     ),
   );
 
+  servicelocator.registerFactory(
+    () => AddReplyUsecase(
+      servicelocator(),
+    ),
+  );
+
   servicelocator.registerLazySingleton(
     () => HomeBloc(
       fetchPostUsecase: servicelocator(),
+      addReplyUsecase: servicelocator(),
     ),
   );
 }
