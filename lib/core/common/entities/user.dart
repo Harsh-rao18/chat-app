@@ -32,7 +32,7 @@ class Metadata {
     );
   }
 
-  Map<String, dynamic> toJson() {  // ✅ Renamed from toMap()
+  Map<String, dynamic> toMap() {  
     return {
       'name': name,
       'image': image,

@@ -1,8 +1,8 @@
 import 'package:application_one/feature/home/presentation/pages/home_page.dart';
 import 'package:application_one/feature/messages/presentation/views/message_screen.dart';
+import 'package:application_one/feature/notification/presenation/views/notification_page.dart';
 import 'package:application_one/feature/post/presentaion/views/post_page.dart';
 import 'package:application_one/feature/profile/presentation/pages/profile_page.dart';
-import 'package:application_one/feature/search/presenation/views/search_page.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
@@ -14,12 +14,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
-
+  
   final List<Widget> pages = [
     const HomePage(),
     const MessageScreen(),
     const PostPage(),
-    const SearchPage(),
+    const  NotificationPage(),
     const ProfilePage(),
   ];
 
@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage> {
               ),
               NavigationDestination(
                 icon: Icon(Icons.message_outlined),
-                label: 'search',
+                label: 'message',
                 selectedIcon: Icon(Icons.message),
               ),
               NavigationDestination(
@@ -59,9 +59,9 @@ class _MainPageState extends State<MainPage> {
                 selectedIcon: Icon(Icons.add),
               ),
               NavigationDestination(
-                icon: Icon(Icons.search_outlined),
+                icon: Icon(Icons.favorite_outline),
                 label: 'notifications',
-                selectedIcon: Icon(Icons.search),
+                selectedIcon: Icon(Icons.favorite),
               ),
               NavigationDestination(
                 icon: Icon(Icons.person_outlined),

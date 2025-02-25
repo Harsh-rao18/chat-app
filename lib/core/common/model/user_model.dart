@@ -19,12 +19,12 @@ class UserModel extends User {
   }
 
   /// Convert UserModel to Firestore/Supabase map
-  Map<String, dynamic> toJson() {  // ✅ Renamed from toMap()
+  Map<String, dynamic> toMap() {  // ✅ Renamed from toMap()
     return {
       'id': id,
       'email': email,
       'created_at': createdAt,
-      'metadata': metadata.toJson(), // ✅ Ensure Metadata has a toJson() method
+      'metadata': metadata.toMap(), // ✅ Ensure Metadata has a toJson() method
     };
   }
 

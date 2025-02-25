@@ -14,6 +14,11 @@ import 'package:application_one/feature/home/domain/repository/home_repository.d
 import 'package:application_one/feature/home/domain/usecase/add_reply_usecase.dart';
 import 'package:application_one/feature/home/domain/usecase/fetch_post_usecase.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
+import 'package:application_one/feature/notification/data/datasource/notification_remote_data_source.dart';
+import 'package:application_one/feature/notification/data/repository/notification_repository_impl.dart';
+import 'package:application_one/feature/notification/domain/repository/notification_repository.dart';
+import 'package:application_one/feature/notification/domain/usecase/notification_usecase.dart';
+import 'package:application_one/feature/notification/presenation/bloc/notification_bloc.dart';
 import 'package:application_one/feature/post/data/datasource/post_remote_data_source.dart';
 import 'package:application_one/feature/post/data/repository/post_repository_impl.dart';
 import 'package:application_one/feature/post/domain/repository/post_repository.dart';
@@ -41,6 +46,7 @@ Future<void> initDependency() async {
   _profile();
   _post();
   _fetchPost();
+  _fetchNotification();
 }
 
 void _initAuth() {
@@ -167,6 +173,31 @@ void _fetchPost() {
     () => HomeBloc(
       fetchPostUsecase: servicelocator(),
       addReplyUsecase: servicelocator(),
+    ),
+  );
+}
+
+void _fetchNotification() {
+  servicelocator.registerFactory<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory<NotificationRepository>(
+    () => NotificationRepositoryImpl(
+      servicelocator(),
+    ),
+  );
+
+  servicelocator.registerFactory(
+    () => NotificationUsecase(
+      servicelocator(),
+    ),
+  );
+
+  servicelocator.registerLazySingleton(
+    () => NotificationBloc(
+      notificationUsecase: servicelocator(),
     ),
   );
 }

@@ -40,7 +40,7 @@ class PostModel extends Post {
       'user_id': userId,
       'image': image,
       'created_at': createdAt,
-      'user': user?.toJson(),
+      'user': user?.toMap(),
       'likes': likes?.map((v) => v.toJson()).toList(),
     };
   }

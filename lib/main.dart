@@ -4,6 +4,7 @@ import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/auth/presentation/views/login_page.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/main_page.dart';
+import 'package:application_one/feature/notification/presenation/bloc/notification_bloc.dart';
 import 'package:application_one/feature/post/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:application_one/init_dependency.dart';
@@ -20,6 +21,7 @@ void main() async {
       BlocProvider(create: (_) => servicelocator<ProfileBloc>()),
       BlocProvider(create: (_) => servicelocator<PostBloc>()),
       BlocProvider(create: (_) => servicelocator<HomeBloc>()),
+      BlocProvider(create: (_) => servicelocator<NotificationBloc>()),
     ],
     child: const MyApp(),
   ));
