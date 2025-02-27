@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'package:application_one/core/common/entities/post.dart';
 import 'package:application_one/core/error/failure.dart';
 import 'package:fpdart/fpdart.dart';
 
 abstract interface class StorageRepository {
-  
   /// Picks an image from the gallery and compresses it.
   Future<Either<Failure, File>> pickAndCompressImage();
 
@@ -13,4 +13,7 @@ abstract interface class StorageRepository {
     required String description,
     File? file,
   });
+
+  // fetch posts
+  Future<Either<Failure, List<Post>>> fetchPost();
 }

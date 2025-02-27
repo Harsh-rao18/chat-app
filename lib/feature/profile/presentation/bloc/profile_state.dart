@@ -20,3 +20,10 @@ class ProfileUploaded extends ProfileState {
   final String imageUrl;
   ProfileUploaded(this.imageUrl);
 }
+
+
+//fetch post
+class FetchPostLoaded extends ProfileState {
+  final List<Post> posts;
+   FetchPostLoaded(this.posts);
+}

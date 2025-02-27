@@ -1,6 +1,6 @@
 import 'package:application_one/core/common/usecase/usecase.dart';
 import 'package:application_one/core/error/failure.dart';
-import 'package:application_one/feature/home/domain/entities/post.dart';
+import 'package:application_one/core/common/entities/post.dart';
 import 'package:application_one/feature/home/domain/repository/home_repository.dart';
 import 'package:fpdart/fpdart.dart';
 

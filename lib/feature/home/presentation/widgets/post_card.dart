@@ -1,5 +1,5 @@
 import 'package:application_one/core/utils/image_circle.dart';
-import 'package:application_one/feature/home/domain/entities/post.dart';
+import 'package:application_one/core/common/entities/post.dart';
 import 'package:application_one/feature/home/presentation/widgets/post_card_bottom_bar.dart';
 import 'package:application_one/feature/home/presentation/widgets/post_card_image.dart';
 import 'package:application_one/feature/home/presentation/widgets/post_card_top_bar.dart';

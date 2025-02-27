@@ -1,4 +1,4 @@
-import 'package:application_one/feature/home/domain/entities/post.dart';
+import 'package:application_one/core/common/entities/post.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 

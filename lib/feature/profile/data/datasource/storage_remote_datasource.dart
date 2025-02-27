@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:application_one/core/common/model/post_model.dart';
+import 'package:application_one/core/error/exception.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,7 +10,9 @@ abstract interface class StorageRemoteDataSource {
   Future<File?> pickImage();
   Future<File?> compressImage(File file);
   Future<String> uploadImage(String userId, File? file);
-  Future<String> updateUserProfile(String userId, String description, String? imageUrl);
+  Future<String> updateUserProfile(
+      String userId, String description, String? imageUrl);
+  Future<List<PostModel>> fetchPost();
 }
 
 class StorageRemoteDataSourceImpl implements StorageRemoteDataSource {
@@ -48,13 +52,32 @@ class StorageRemoteDataSourceImpl implements StorageRemoteDataSource {
     return supabaseClient.storage.from('bucket_h1').getPublicUrl(filename);
   }
 
-@override
-Future<String> updateUserProfile(String userId, String description, String? imageUrl) async {
-  await supabaseClient.auth.updateUser(UserAttributes(data: {
-    "description": description,
-    "image": imageUrl ?? "",
-  }));
+  @override
+  Future<String> updateUserProfile(
+      String userId, String description, String? imageUrl) async {
+    await supabaseClient.auth.updateUser(UserAttributes(data: {
+      "description": description,
+      "image": imageUrl ?? "",
+    }));
 
-  return imageUrl ?? ""; // ✅ Ensure a String is always returned
-}
+    return imageUrl ?? ""; // ✅ Ensure a String is always returned
+  }
+
+  @override
+  Future<List<PostModel>> fetchPost() async {
+    try {
+      final response = await supabaseClient.from('posts').select('''
+        id, content, image, created_at, comment_count, like_count, user_id,
+        user:user_id(email, metadata)
+      ''').order("id", ascending: false);
+
+      if (response.isEmpty) return [];
+
+      return response
+          .map<PostModel>((item) => PostModel.fromJson(item))
+          .toList();
+    } catch (e) {
+      throw ServerException("Failed to fetch posts: ${e.toString()}");
+    }
+  }
 }

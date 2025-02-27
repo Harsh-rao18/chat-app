@@ -15,11 +15,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     // Dispatch event when the page is first loaded
-    context.read<HomeBloc>().add(HomeFetchPostsEvent());
+    context.read<HomeBloc>().add(const FetchPostsEvent());
   }
 
   Future<void> _onRefresh() async {
-    context.read<HomeBloc>().add(HomeFetchPostsEvent());
+    context.read<HomeBloc>().add(const FetchPostsEvent());
   }
 
   @override

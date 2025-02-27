@@ -1,5 +1,6 @@
 import 'package:application_one/core/common/cubit/app_user_cubit.dart';
 import 'package:application_one/core/secret/app_secret.dart';
+import 'package:application_one/feature/Addpost/domain/usecase/post_pick_image_use_case.dart';
 import 'package:application_one/feature/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:application_one/feature/auth/data/repository/auth_reposotory_impl.dart';
 import 'package:application_one/feature/auth/domain/repository/auth_repository.dart';
@@ -12,6 +13,7 @@ import 'package:application_one/feature/home/data/datasource/home_remote_data_so
 import 'package:application_one/feature/home/data/repository/home_reppository_impl.dart';
 import 'package:application_one/feature/home/domain/repository/home_repository.dart';
 import 'package:application_one/feature/home/domain/usecase/add_reply_usecase.dart';
+import 'package:application_one/feature/home/domain/usecase/fetch_comments.dart';
 import 'package:application_one/feature/home/domain/usecase/fetch_post_usecase.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/notification/data/datasource/notification_remote_data_source.dart';
@@ -19,15 +21,16 @@ import 'package:application_one/feature/notification/data/repository/notificatio
 import 'package:application_one/feature/notification/domain/repository/notification_repository.dart';
 import 'package:application_one/feature/notification/domain/usecase/notification_usecase.dart';
 import 'package:application_one/feature/notification/presenation/bloc/notification_bloc.dart';
-import 'package:application_one/feature/post/data/datasource/post_remote_data_source.dart';
-import 'package:application_one/feature/post/data/repository/post_repository_impl.dart';
-import 'package:application_one/feature/post/domain/repository/post_repository.dart';
-import 'package:application_one/feature/post/domain/usecase/post_pick_Image_use_case.dart';
-import 'package:application_one/feature/post/domain/usecase/upload_post_usecase.dart';
-import 'package:application_one/feature/post/presentaion/bloc/post_bloc.dart';
+import 'package:application_one/feature/Addpost/data/datasource/post_remote_data_source.dart';
+import 'package:application_one/feature/Addpost/data/repository/post_repository_impl.dart';
+import 'package:application_one/feature/Addpost/domain/repository/post_repository.dart';
+
+import 'package:application_one/feature/Addpost/domain/usecase/upload_post_usecase.dart';
+import 'package:application_one/feature/Addpost/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/profile/data/datasource/storage_remote_datasource.dart';
 import 'package:application_one/feature/profile/data/repository/storage_repository_impl.dart';
 import 'package:application_one/feature/profile/domain/repository/storege_repository.dart';
+import 'package:application_one/feature/profile/domain/usecase/fetch_profile_post_usecase.dart';
 import 'package:application_one/feature/profile/domain/usecase/pick_and_compress_image_usecase.dart';
 import 'package:application_one/feature/profile/domain/usecase/upload_profile_usecase.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
@@ -115,11 +118,17 @@ void _profile() {
       servicelocator(),
     ),
   );
+  servicelocator.registerFactory(
+    () => FetchProfilePostUsecase(
+      servicelocator(),
+    ),
+  );
 
   servicelocator.registerLazySingleton(
     () => ProfileBloc(
       profileUsecase: servicelocator(),
       pickAndCompressImageUseCase: servicelocator(),
+      fetchProfilePostUsecase: servicelocator()
     ),
   );
 }
@@ -168,11 +177,17 @@ void _fetchPost() {
       servicelocator(),
     ),
   );
+  servicelocator.registerFactory(
+    () => FetchCommentsUsecase(
+      servicelocator(),
+    ),
+  );
 
   servicelocator.registerLazySingleton(
     () => HomeBloc(
       fetchPostUsecase: servicelocator(),
       addReplyUsecase: servicelocator(),
+      fetchCommentsUsecase: servicelocator(),
     ),
   );
 }

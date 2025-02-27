@@ -1,4 +1,4 @@
-import 'package:application_one/core/common/model/user_model.dart';
+import 'package:application_one/core/common/entities/user.dart';
 
 class Notification {
   final int id;
@@ -6,7 +6,7 @@ class Notification {
   final String notification;
   final DateTime createdAt;
   final String userId;
-  final UserModel? user;
+  final User? user;
 
   const Notification({
     required this.id,

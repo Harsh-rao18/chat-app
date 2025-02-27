@@ -1,11 +1,11 @@
 import 'package:application_one/core/Theme/theme.dart';
 import 'package:application_one/core/common/cubit/app_user_cubit.dart';
+import 'package:application_one/feature/Addpost/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/auth/presentation/views/login_page.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/main_page.dart';
 import 'package:application_one/feature/notification/presenation/bloc/notification_bloc.dart';
-import 'package:application_one/feature/post/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:application_one/init_dependency.dart';
 import 'package:flutter/material.dart';

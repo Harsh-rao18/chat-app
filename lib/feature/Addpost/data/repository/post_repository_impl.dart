@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:application_one/core/error/failure.dart';
-import 'package:application_one/feature/post/data/datasource/post_remote_data_source.dart';
-import 'package:application_one/feature/post/domain/repository/post_repository.dart';
+import 'package:application_one/feature/Addpost/data/datasource/post_remote_data_source.dart';
+import 'package:application_one/feature/Addpost/domain/repository/post_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
 class PostRepositoryImpl implements PostRepository {

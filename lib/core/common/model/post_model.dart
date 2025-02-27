@@ -1,6 +1,6 @@
 import 'package:application_one/core/common/model/user_model.dart';
 import 'package:application_one/feature/home/data/models/like_model.dart';
-import 'package:application_one/feature/home/domain/entities/post.dart';
+import 'package:application_one/core/common/entities/post.dart';
 
 class PostModel extends Post {
   PostModel({

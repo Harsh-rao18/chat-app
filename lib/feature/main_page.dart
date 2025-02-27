@@ -1,7 +1,7 @@
+import 'package:application_one/feature/Addpost/presentaion/views/post_page.dart';
 import 'package:application_one/feature/home/presentation/pages/home_page.dart';
 import 'package:application_one/feature/messages/presentation/views/message_screen.dart';
 import 'package:application_one/feature/notification/presenation/views/notification_page.dart';
-import 'package:application_one/feature/post/presentaion/views/post_page.dart';
 import 'package:application_one/feature/profile/presentation/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 

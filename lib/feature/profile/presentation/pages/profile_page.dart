@@ -1,7 +1,9 @@
 import 'package:application_one/core/utils/image_circle.dart';
+import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:application_one/feature/profile/presentation/pages/edit_profile.dart';
 import 'package:application_one/feature/profile/presentation/pages/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -20,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _fetchUserProfile();
+    context.read<ProfileBloc>().add(FetchProfilePostsEvent());
   }
 
   Future<void> _fetchUserProfile() async {
@@ -50,7 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       body: DefaultTabController(
-        length: 2,
+        length: 1,
         child: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return <Widget>[
@@ -155,16 +158,57 @@ class _ProfilePageState extends State<ProfilePage> {
                 delegate: SliverAppBarDelegate(
                   const TabBar(indicatorSize: TabBarIndicatorSize.tab, tabs: [
                     Tab(text: 'Posts'),
-                    Tab(text: 'Replies'),
                   ]),
                 ),
               ),
             ];
           },
-          body: const TabBarView(
+          body: TabBarView(
             children: [
-              Center(child: Text('Posts')),
-              Center(child: Text('Replies')),
+              BlocBuilder<ProfileBloc, ProfileState>(
+                builder: (context, state) {
+                  if (state is ProfileLoading) {
+                    return const CircularProgressIndicator();
+                  } else if (state is FetchPostLoaded) {
+                    final posts = state.posts;
+                    if (posts.isEmpty) {
+                      return const Center(child: Text('No posts available.'));
+                    }
+                    return ListView.builder(
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        final post = posts[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: [
+                                if (post.image != null)
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(10)),
+                                    child: Image.network(
+                                      post.image!,
+                                      width: double.infinity,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else if (state is ProfileError) {
+                    return Center(child: Text(state.message));
+                  }
+                  return const Center(child: Text('Something went wrong!'));
+                },
+              ),
             ],
           ),
         ),

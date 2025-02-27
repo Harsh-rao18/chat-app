@@ -15,3 +15,7 @@ class ProfileUploadEvent extends ProfileEvent {
     this.file,
   });
 }
+
+class FetchProfilePostsEvent extends ProfileEvent {
+   FetchProfilePostsEvent();
+}

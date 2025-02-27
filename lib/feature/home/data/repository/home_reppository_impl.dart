@@ -1,6 +1,7 @@
 import 'package:application_one/core/error/failure.dart';
 import 'package:application_one/feature/home/data/datasource/home_remote_data_source.dart';
-import 'package:application_one/feature/home/domain/entities/post.dart';
+import 'package:application_one/feature/home/domain/entities/comment.dart';
+import 'package:application_one/core/common/entities/post.dart';
 import 'package:application_one/feature/home/domain/repository/home_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -33,6 +34,17 @@ class HomeReppositoryImpl implements HomeRepository {
       return right(null);
     } catch (e) {
       return left(Failure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Comment>>> fetchComments(
+      {required int postId}) async {
+    try {
+      final comment = await homeRemoteDataSource.fetchComments(postId: postId);
+      return right(comment);
+    } catch (e) {
+      return left(Failure(e.toString()));
     }
   }
 }
