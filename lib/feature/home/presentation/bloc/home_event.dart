@@ -39,3 +39,27 @@ class AddReplyEvent extends HomeEvent {
   @override
   List<Object> get props => [userId, postId, postUserId, reply];
 }
+
+// Likes
+
+// Toggle like on a post
+class ToggleLikeEvent extends HomeEvent {
+  final int postId; // ✅ Explicitly include postId
+  final Like like;
+
+  const ToggleLikeEvent({required this.postId, required this.like});
+
+  @override
+  List<Object> get props => [postId, like];
+}
+
+
+// Fetch likes for a specific post
+class FetchLikesEvent extends HomeEvent {
+  final int postId;
+
+  const FetchLikesEvent({required this.postId});
+
+  @override
+  List<Object> get props => [postId];
+}

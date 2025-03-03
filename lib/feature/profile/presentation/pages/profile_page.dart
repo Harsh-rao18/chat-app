@@ -2,6 +2,7 @@ import 'package:application_one/core/utils/image_circle.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:application_one/feature/profile/presentation/pages/edit_profile.dart';
 import 'package:application_one/feature/profile/presentation/pages/settings.dart';
+import 'package:application_one/feature/profile/presentation/widgets/show_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -29,12 +30,12 @@ class _ProfilePageState extends State<ProfilePage> {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return;
 
-    final metadata = user.userMetadata; // Fetch user metadata
+    final metadata = user.userMetadata;
 
     setState(() {
       _name = metadata?['name'] ?? 'User';
       _description = metadata?['description'] ?? 'No description available';
-      _imageUrl = metadata?['image']; // May be null
+      _imageUrl = metadata?['image'];
     });
   }
 
@@ -45,8 +46,8 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const Settings()));
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => const Settings()));
             },
             icon: const Icon(Icons.settings),
           )
@@ -71,7 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Padding(
                             padding: const EdgeInsets.only(right: 15),
                             child: ImageCircle(radius: 40, url: _imageUrl),
-                          ), // ✅ Show user image
+                          ),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,15 +86,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 const SizedBox(height: 5),
                                 SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.70,
+                                  width: MediaQuery.of(context).size.width * 0.70,
                                   child: Text(
                                     _description ?? 'Loading...',
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                    ),
+                                    style: const TextStyle(fontSize: 15),
                                   ),
                                 ),
                               ],
@@ -117,7 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                                   if (result == true) {
                                     setState(() {
-                                      _fetchUserProfile(); // Refresh data after edit
+                                      _fetchUserProfile();
                                     });
                                   }
                                 },
@@ -168,40 +166,69 @@ class _ProfilePageState extends State<ProfilePage> {
               BlocBuilder<ProfileBloc, ProfileState>(
                 builder: (context, state) {
                   if (state is ProfileLoading) {
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
                   } else if (state is FetchPostLoaded) {
                     final posts = state.posts;
                     if (posts.isEmpty) {
                       return const Center(child: Text('No posts available.'));
                     }
-                    return ListView.builder(
-                      itemCount: posts.length,
-                      itemBuilder: (context, index) {
-                        final post = posts[index];
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              children: [
-                                if (post.image != null)
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(10)),
-                                    child: Image.network(
-                                      post.image!,
-                                      width: double.infinity,
-                                      height: 200,
-                                      fit: BoxFit.cover,
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.85,
+                        ),
+                        itemCount: posts.length,
+                        itemBuilder: (context, index) {
+                          final post = posts[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ImagePreviewScreen(imageUrl: post.image!,likesCount: post.likeCount ?? 0, commentsCount: post.commentCount ?? 0,),
+                                ),
+                              );
+                            },
+                            child: Hero(
+                              tag: post.image!,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 4,
+                                      spreadRadius: 1,
                                     ),
-                                  ),
-                              ],
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: post.image != null
+                                      ? Image.network(
+                                          post.image!,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const Center(
+                                          child: Icon(
+                                            Icons.image_not_supported,
+                                            size: 40,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                ),
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     );
                   } else if (state is ProfileError) {
                     return Center(child: Text(state.message));
@@ -217,6 +244,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+
 // SliverPersistentHeader
 class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
@@ -229,8 +257,7 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: Colors.black,
       child: _tabBar,

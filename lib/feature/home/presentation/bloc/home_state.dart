@@ -12,7 +12,9 @@ class HomeInitial extends HomeState {}
 
 class HomeLoading extends HomeState {}
 
-class CommentsLoading extends HomeState {} // Loading state for comments
+class CommentsLoading extends HomeState {}
+
+class LikesLoading extends HomeState {}
 
 // Success States
 class HomeLoaded extends HomeState {
@@ -34,13 +36,25 @@ class CommentsLoaded extends HomeState {
 }
 
 class ReplyAddSuccess extends HomeState {
-  final String message; // Success message (or use a boolean flag)
+  final String message;
 
   const ReplyAddSuccess(this.message);
 
   @override
   List<Object> get props => [message];
 }
+
+// ✅ Updated: Track postId for UI updates
+class PostLiked extends HomeState {
+  final int postId;
+  final int likeCount; // ✅ Store the updated like count
+
+  const PostLiked({required this.postId, required this.likeCount});
+
+  @override
+  List<Object> get props => [postId, likeCount];
+}
+
 
 // Error States
 class HomeError extends HomeState {
@@ -52,10 +66,19 @@ class HomeError extends HomeState {
   List<Object> get props => [message];
 }
 
-class CommentsError extends HomeState { // New specific error state
+class CommentsError extends HomeState {
   final String message;
 
   const CommentsError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class LikeError extends HomeState {
+  final String message;
+
+  const LikeError(this.message);
 
   @override
   List<Object> get props => [message];

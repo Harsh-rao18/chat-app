@@ -15,6 +15,7 @@ import 'package:application_one/feature/home/domain/repository/home_repository.d
 import 'package:application_one/feature/home/domain/usecase/add_reply_usecase.dart';
 import 'package:application_one/feature/home/domain/usecase/fetch_comments.dart';
 import 'package:application_one/feature/home/domain/usecase/fetch_post_usecase.dart';
+import 'package:application_one/feature/home/domain/usecase/toggle_like_usecase.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/notification/data/datasource/notification_remote_data_source.dart';
 import 'package:application_one/feature/notification/data/repository/notification_repository_impl.dart';
@@ -162,7 +163,7 @@ void _fetchPost() {
     ),
   );
   servicelocator.registerFactory<HomeRepository>(
-    () => HomeReppositoryImpl(
+    () => HomeRepositoryImpl(
       servicelocator(),
     ),
   );
@@ -182,13 +183,20 @@ void _fetchPost() {
       servicelocator(),
     ),
   );
+  servicelocator.registerFactory(
+    () => ToggleLikeUseCase(
+      servicelocator(),
+    ),
+  );
+
 
   servicelocator.registerLazySingleton(
     () => HomeBloc(
       fetchPostUsecase: servicelocator(),
       addReplyUsecase: servicelocator(),
       fetchCommentsUsecase: servicelocator(),
-    ),
+      toggleLikeUseCase: servicelocator(),
+    ),  
   );
 }
 

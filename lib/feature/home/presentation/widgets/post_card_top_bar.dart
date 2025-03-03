@@ -6,15 +6,15 @@ class PostCardTopBar extends StatelessWidget {
   final Post post;
   const PostCardTopBar({super.key, required this.post});
 
-  String formatDateFromNow(String? dateString) {
-    if (dateString == null || dateString.isEmpty) {
+  String formatDateFromNow(DateTime? dateTime) {
+    // ✅ Accept DateTime? instead of String?
+    if (dateTime == null) {
       return "Unknown time";
     }
 
     try {
-      DateTime utcDateTime = DateTime.parse(dateString);
-      DateTime istDateTime = utcDateTime.add(const Duration(hours: 5, minutes: 30));
-
+      DateTime istDateTime =
+          dateTime.add(const Duration(hours: 5, minutes: 30));
       return Jiffy.parseFromDateTime(istDateTime).fromNow();
     } catch (e) {
       return "Invalid date";

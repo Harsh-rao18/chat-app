@@ -8,7 +8,7 @@ class Post {
   final String? userId;
   final int? likeCount;
   final int? commentCount;
-  final String? createdAt;
+  final DateTime? createdAt;
   final UserModel? user;
   final List<LikeModel>? likes;
   Post({

@@ -63,21 +63,27 @@ class StorageRemoteDataSourceImpl implements StorageRemoteDataSource {
     return imageUrl ?? ""; // ✅ Ensure a String is always returned
   }
 
-  @override
-  Future<List<PostModel>> fetchPost() async {
-    try {
-      final response = await supabaseClient.from('posts').select('''
-        id, content, image, created_at, comment_count, like_count, user_id,
-        user:user_id(email, metadata)
-      ''').order("id", ascending: false);
+@override
+Future<List<PostModel>> fetchPost() async {
+  try {
+    final user = supabaseClient.auth.currentUser;
+    if (user == null) throw ServerException("User not authenticated");
 
-      if (response.isEmpty) return [];
+    final response = await supabaseClient
+        .from('posts')
+        .select('''
+          id, content, image, created_at, comment_count, like_count, user_id,
+          user:user_id(email, metadata)
+        ''')
+        .eq('user_id', user.id) // ✅ Fetch posts only for the authenticated user
+        .order("id", ascending: false);
 
-      return response
-          .map<PostModel>((item) => PostModel.fromJson(item))
-          .toList();
-    } catch (e) {
-      throw ServerException("Failed to fetch posts: ${e.toString()}");
-    }
+    if (response.isEmpty) return [];
+
+    return response.map<PostModel>((item) => PostModel.fromJson(item)).toList();
+  } catch (e) {
+    throw ServerException("Failed to fetch user posts: ${e.toString()}");
   }
+}
+
 }

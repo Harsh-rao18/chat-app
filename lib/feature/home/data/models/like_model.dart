@@ -1,18 +1,31 @@
-class LikeModel {
-  String? userId;
-  int? postId;
+import 'package:application_one/feature/home/domain/entities/like.dart';
 
-  LikeModel({this.userId, this.postId});
+class LikeModel extends Like {
+  const LikeModel({required super.userId, required super.postId});
 
-  LikeModel.fromJson(Map<String, dynamic> json) {
-    userId = json['user_id'];
-    postId = json['post_id'];
+  /// Convert Firestore/Supabase data to `LikeModel`
+  factory LikeModel.fromMap(Map<String, dynamic> map) {
+    return LikeModel(
+      userId: map['user_id'] as String, // Matching Supabase column names
+      postId: map['post_id'] as int,
+    );
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['user_id'] = userId;
-    data['post_id'] = postId;
-    return data;
+  /// Convert `LikeModel` to JSON (for Supabase)
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'user_id': userId,
+      'post_id': postId,
+    };
+  }
+
+  /// Creates a copy of `LikeModel` with optional changes
+  @override
+  LikeModel copyWith({String? userId, int? postId}) {
+    return LikeModel(
+      userId: userId ?? this.userId,
+      postId: postId ?? this.postId,
+    );
   }
 }
