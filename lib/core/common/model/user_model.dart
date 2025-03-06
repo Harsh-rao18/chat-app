@@ -24,7 +24,7 @@ class UserModel extends User {
       'id': id,
       'email': email,
       'created_at': createdAt,
-      'metadata': metadata.toMap(), // ✅ Ensure Metadata has a toJson() method
+      'metadata': metadata.toMap(), // ✅ Ensure Metadata has a toMap() method
     };
   }
 

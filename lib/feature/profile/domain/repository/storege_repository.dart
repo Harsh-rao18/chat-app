@@ -14,6 +14,6 @@ abstract interface class StorageRepository {
     File? file,
   });
 
-  // fetch posts
+  /// fetch posts
   Future<Either<Failure, List<Post>>> fetchPost();
 }

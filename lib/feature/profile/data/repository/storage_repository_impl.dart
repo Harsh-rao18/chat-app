@@ -17,9 +17,8 @@ class StorageRepositoryImpl implements StorageRepository {
       if (image == null) return left(Failure("Image not selected"));
 
       final compressedImage = await remoteDataSource.compressImage(image);
-      if (compressedImage == null)
-        return left(Failure("Image compression failed"));
-
+      if (compressedImage == null) return left(Failure("Image compression failed"));
+        
       return right(compressedImage);
     } catch (e) {
       return left(Failure(e.toString()));

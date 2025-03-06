@@ -17,6 +17,11 @@ import 'package:application_one/feature/home/domain/usecase/fetch_comments.dart'
 import 'package:application_one/feature/home/domain/usecase/fetch_post_usecase.dart';
 import 'package:application_one/feature/home/domain/usecase/toggle_like_usecase.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
+import 'package:application_one/feature/messages/data/datasource/message_remote_data_source.dart';
+import 'package:application_one/feature/messages/data/repository/message_repository_impl.dart';
+import 'package:application_one/feature/messages/domain/repository/message_repository.dart';
+import 'package:application_one/feature/messages/domain/usecases/search_user_usecase.dart';
+import 'package:application_one/feature/messages/presentation/bloc/message_bloc.dart';
 import 'package:application_one/feature/notification/data/datasource/notification_remote_data_source.dart';
 import 'package:application_one/feature/notification/data/repository/notification_repository_impl.dart';
 import 'package:application_one/feature/notification/domain/repository/notification_repository.dart';
@@ -51,6 +56,7 @@ Future<void> initDependency() async {
   _post();
   _fetchPost();
   _fetchNotification();
+  _message();
 }
 
 void _initAuth() {
@@ -127,10 +133,9 @@ void _profile() {
 
   servicelocator.registerLazySingleton(
     () => ProfileBloc(
-      profileUsecase: servicelocator(),
-      pickAndCompressImageUseCase: servicelocator(),
-      fetchProfilePostUsecase: servicelocator()
-    ),
+        profileUsecase: servicelocator(),
+        pickAndCompressImageUseCase: servicelocator(),
+        fetchProfilePostUsecase: servicelocator()),
   );
 }
 
@@ -189,14 +194,13 @@ void _fetchPost() {
     ),
   );
 
-
   servicelocator.registerLazySingleton(
     () => HomeBloc(
       fetchPostUsecase: servicelocator(),
       addReplyUsecase: servicelocator(),
       fetchCommentsUsecase: servicelocator(),
       toggleLikeUseCase: servicelocator(),
-    ),  
+    ),
   );
 }
 
@@ -221,6 +225,29 @@ void _fetchNotification() {
   servicelocator.registerLazySingleton(
     () => NotificationBloc(
       notificationUsecase: servicelocator(),
+    ),
+  );
+}
+
+void _message() {
+  servicelocator.registerFactory<MessageRemoteDataSource>(
+    () => MessageRemoteDataSourceImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory<MessageRepository>(
+    () => MessageRepositoryImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => SearchUserUsecase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerLazySingleton(
+    () => MessageBloc(
+      searchUserUsecase: servicelocator(),
     ),
   );
 }

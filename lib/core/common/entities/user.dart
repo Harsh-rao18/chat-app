@@ -11,6 +11,7 @@ class User {
     required this.createdAt,
   });
 
+  
 }
 
 class Metadata {
@@ -40,4 +41,5 @@ class Metadata {
     };
   }
 }
+
 

@@ -17,7 +17,7 @@ class _MainPageState extends State<MainPage> {
   
   final List<Widget> pages = [
     const HomePage(),
-    const MessageScreen(),
+    MessageScreen(),
     const PostPage(),
     const  NotificationPage(),
     const ProfilePage(),
@@ -55,7 +55,7 @@ class _MainPageState extends State<MainPage> {
               ),
               NavigationDestination(
                 icon: Icon(Icons.add_outlined),
-                label: 'add',
+                label: 'post',
                 selectedIcon: Icon(Icons.add),
               ),
               NavigationDestination(

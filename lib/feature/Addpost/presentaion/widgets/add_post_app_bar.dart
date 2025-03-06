@@ -19,11 +19,9 @@ class AddPostAppBar extends StatelessWidget {
           Row(
             children: [
               IconButton(
-  onPressed: () {
-  },
-  icon: const Icon(Icons.close),
-),
-
+                onPressed: () {},
+                icon: const Icon(Icons.close),
+              ),
               const SizedBox(
                 width: 10,
               ),
