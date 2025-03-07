@@ -1,7 +1,7 @@
-import 'package:application_one/feature/Addpost/presentaion/views/post_page.dart';
+import 'package:application_one/feature/addpost/presentaion/views/post_page.dart';
+import 'package:application_one/feature/chat/presenataion/views/chat_screen.dart';
 import 'package:application_one/feature/home/presentation/pages/home_page.dart';
-import 'package:application_one/feature/messages/presentation/views/message_screen.dart';
-import 'package:application_one/feature/notification/presenation/views/notification_page.dart';
+import 'package:application_one/feature/search/presentation/views/search_screen.dart';
 import 'package:application_one/feature/profile/presentation/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 
@@ -17,9 +17,9 @@ class _MainPageState extends State<MainPage> {
   
   final List<Widget> pages = [
     const HomePage(),
-    MessageScreen(),
+    const  ChatScreen(),
     const PostPage(),
-    const  NotificationPage(),
+    const SearchScreen(),
     const ProfilePage(),
   ];
 
@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage> {
               ),
               NavigationDestination(
                 icon: Icon(Icons.message_outlined),
-                label: 'message',
+                label: 'chats',
                 selectedIcon: Icon(Icons.message),
               ),
               NavigationDestination(
@@ -59,9 +59,9 @@ class _MainPageState extends State<MainPage> {
                 selectedIcon: Icon(Icons.add),
               ),
               NavigationDestination(
-                icon: Icon(Icons.favorite_outline),
-                label: 'notifications',
-                selectedIcon: Icon(Icons.favorite),
+                icon: Icon(Icons.search_outlined),
+                label: 'search',
+                selectedIcon: Icon(Icons.search),
               ),
               NavigationDestination(
                 icon: Icon(Icons.person_outlined),

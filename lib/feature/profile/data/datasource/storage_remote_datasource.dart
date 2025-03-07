@@ -12,7 +12,7 @@ abstract interface class StorageRemoteDataSource {
   Future<String> uploadImage(String userId, File? file);
   Future<String> updateUserProfile(
       String userId, String description, String? imageUrl);
-  Future<List<PostModel>> fetchPost();
+  Future<List<PostModel>> fetchPost(String userId);
 }
 
 class StorageRemoteDataSourceImpl implements StorageRemoteDataSource {
@@ -64,18 +64,16 @@ class StorageRemoteDataSourceImpl implements StorageRemoteDataSource {
   }
 
 @override
-Future<List<PostModel>> fetchPost() async {
+Future<List<PostModel>> fetchPost(String userId) async {
   try {
-    final user = supabaseClient.auth.currentUser;
-    if (user == null) throw ServerException("User not authenticated");
-
+    
     final response = await supabaseClient
         .from('posts')
         .select('''
           id, content, image, created_at, comment_count, like_count, user_id,
           user:user_id(email, metadata)
         ''')
-        .eq('user_id', user.id) // ✅ Fetch posts only for the authenticated user
+        .eq('user_id', userId) // ✅ Fetch posts only for the authenticated user
         .order("id", ascending: false);
 
     if (response.isEmpty) return [];

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:application_one/core/common/usecase/usecase.dart';
-import 'package:application_one/feature/Addpost/domain/usecase/post_pick_image_use_case.dart';
-import 'package:application_one/feature/Addpost/domain/usecase/upload_post_usecase.dart';
+import 'package:application_one/feature/addpost/domain/usecase/post_pick_image_use_case.dart';
+import 'package:application_one/feature/addpost/domain/usecase/upload_post_usecase.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

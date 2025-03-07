@@ -15,5 +15,5 @@ abstract interface class StorageRepository {
   });
 
   /// fetch posts
-  Future<Either<Failure, List<Post>>> fetchPost();
+  Future<Either<Failure, List<Post>>> fetchPost(String userId);
 }

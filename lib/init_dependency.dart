@@ -1,6 +1,6 @@
 import 'package:application_one/core/common/cubit/app_user_cubit.dart';
 import 'package:application_one/core/secret/app_secret.dart';
-import 'package:application_one/feature/Addpost/domain/usecase/post_pick_image_use_case.dart';
+import 'package:application_one/feature/addpost/domain/usecase/post_pick_image_use_case.dart';
 import 'package:application_one/feature/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:application_one/feature/auth/data/repository/auth_reposotory_impl.dart';
 import 'package:application_one/feature/auth/domain/repository/auth_repository.dart';
@@ -17,22 +17,22 @@ import 'package:application_one/feature/home/domain/usecase/fetch_comments.dart'
 import 'package:application_one/feature/home/domain/usecase/fetch_post_usecase.dart';
 import 'package:application_one/feature/home/domain/usecase/toggle_like_usecase.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
-import 'package:application_one/feature/messages/data/datasource/message_remote_data_source.dart';
-import 'package:application_one/feature/messages/data/repository/message_repository_impl.dart';
-import 'package:application_one/feature/messages/domain/repository/message_repository.dart';
-import 'package:application_one/feature/messages/domain/usecases/search_user_usecase.dart';
-import 'package:application_one/feature/messages/presentation/bloc/message_bloc.dart';
+import 'package:application_one/feature/search/data/datasource/search_remote_data_source.dart';
+import 'package:application_one/feature/search/data/repository/search_repository_impl.dart';
+import 'package:application_one/feature/search/domain/repository/search_repository.dart';
+import 'package:application_one/feature/search/domain/usecases/search_user_usecase.dart';
+import 'package:application_one/feature/search/presentation/bloc/search_bloc.dart';
 import 'package:application_one/feature/notification/data/datasource/notification_remote_data_source.dart';
 import 'package:application_one/feature/notification/data/repository/notification_repository_impl.dart';
 import 'package:application_one/feature/notification/domain/repository/notification_repository.dart';
 import 'package:application_one/feature/notification/domain/usecase/notification_usecase.dart';
 import 'package:application_one/feature/notification/presenation/bloc/notification_bloc.dart';
-import 'package:application_one/feature/Addpost/data/datasource/post_remote_data_source.dart';
-import 'package:application_one/feature/Addpost/data/repository/post_repository_impl.dart';
-import 'package:application_one/feature/Addpost/domain/repository/post_repository.dart';
+import 'package:application_one/feature/addpost/data/datasource/post_remote_data_source.dart';
+import 'package:application_one/feature/addpost/data/repository/post_repository_impl.dart';
+import 'package:application_one/feature/addpost/domain/repository/post_repository.dart';
 
-import 'package:application_one/feature/Addpost/domain/usecase/upload_post_usecase.dart';
-import 'package:application_one/feature/Addpost/presentaion/bloc/post_bloc.dart';
+import 'package:application_one/feature/addpost/domain/usecase/upload_post_usecase.dart';
+import 'package:application_one/feature/addpost/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/profile/data/datasource/storage_remote_datasource.dart';
 import 'package:application_one/feature/profile/data/repository/storage_repository_impl.dart';
 import 'package:application_one/feature/profile/domain/repository/storege_repository.dart';
@@ -40,6 +40,11 @@ import 'package:application_one/feature/profile/domain/usecase/fetch_profile_pos
 import 'package:application_one/feature/profile/domain/usecase/pick_and_compress_image_usecase.dart';
 import 'package:application_one/feature/profile/domain/usecase/upload_profile_usecase.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
+import 'package:application_one/feature/showprofile/data/datasource/get_user_remote_data_source.dart';
+import 'package:application_one/feature/showprofile/data/repository/get_user_repository_impl.dart';
+import 'package:application_one/feature/showprofile/domain/repositiory/get_user_repository.dart';
+import 'package:application_one/feature/showprofile/domain/usecase/get_user_use_case.dart';
+import 'package:application_one/feature/showprofile/presentation/bloc/user_profile_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -56,7 +61,8 @@ Future<void> initDependency() async {
   _post();
   _fetchPost();
   _fetchNotification();
-  _message();
+  _searchUser();
+  _getUserProfile();
 }
 
 void _initAuth() {
@@ -229,14 +235,14 @@ void _fetchNotification() {
   );
 }
 
-void _message() {
-  servicelocator.registerFactory<MessageRemoteDataSource>(
-    () => MessageRemoteDataSourceImpl(
+void _searchUser() {
+  servicelocator.registerFactory<SearchRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(
       servicelocator(),
     ),
   );
-  servicelocator.registerFactory<MessageRepository>(
-    () => MessageRepositoryImpl(
+  servicelocator.registerFactory<SearchRepository>(
+    () => SearchRepositoryImpl(
       servicelocator(),
     ),
   );
@@ -246,8 +252,32 @@ void _message() {
     ),
   );
   servicelocator.registerLazySingleton(
-    () => MessageBloc(
+    () => SearchBloc(
       searchUserUsecase: servicelocator(),
+    ),
+  );
+}
+
+void _getUserProfile() {
+  servicelocator.registerFactory<GetUserRemoteDataSource>(
+    () => GetUserRemoteDataSourceImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory<GetUserRepository>(
+    () => GetUserRepositoryImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => GetUserUseCase(
+      servicelocator(),
+    ),
+  );
+
+  servicelocator.registerLazySingleton(
+    () => UserProfileBloc(
+      servicelocator(),
     ),
   );
 }

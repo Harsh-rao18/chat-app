@@ -1,4 +1,5 @@
 import 'package:application_one/feature/home/presentation/widgets/post_card.dart';
+import 'package:application_one/feature/notification/presenation/views/notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
@@ -40,7 +41,18 @@ class _HomePageState extends State<HomePage> {
                     height: 40,
                   ),
                 ),
-                centerTitle: true,
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.favorite_outline))
+                ],
               ),
               SliverToBoxAdapter(
                 child: BlocConsumer<HomeBloc, HomeState>(
@@ -70,7 +82,8 @@ class _HomePageState extends State<HomePage> {
                       );
                     } else if (state is HomeError) {
                       return Center(
-                        child: Text(state.message, style: const TextStyle(color: Colors.red)),
+                        child: Text(state.message,
+                            style: const TextStyle(color: Colors.red)),
                       );
                     }
                     return const SizedBox();

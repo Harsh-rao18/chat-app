@@ -1,13 +1,14 @@
 import 'package:application_one/core/Theme/theme.dart';
 import 'package:application_one/core/common/cubit/app_user_cubit.dart';
-import 'package:application_one/feature/Addpost/presentaion/bloc/post_bloc.dart';
+import 'package:application_one/feature/addpost/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/auth/presentation/views/login_page.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/main_page.dart';
-import 'package:application_one/feature/messages/presentation/bloc/message_bloc.dart';
+import 'package:application_one/feature/search/presentation/bloc/search_bloc.dart';
 import 'package:application_one/feature/notification/presenation/bloc/notification_bloc.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
+import 'package:application_one/feature/showprofile/presentation/bloc/user_profile_bloc.dart';
 import 'package:application_one/init_dependency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +24,8 @@ void main() async {
       BlocProvider(create: (_) => servicelocator<PostBloc>()),
       BlocProvider(create: (_) => servicelocator<HomeBloc>()),
       BlocProvider(create: (_) => servicelocator<NotificationBloc>()),
-      BlocProvider(create: (_) => servicelocator<MessageBloc>()),
+      BlocProvider(create: (_) => servicelocator<SearchBloc>()),
+      BlocProvider(create: (_) => servicelocator<UserProfileBloc>()),
     ],
     child: const MyApp(),
   ));

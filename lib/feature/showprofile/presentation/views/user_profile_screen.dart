@@ -1,70 +1,69 @@
 import 'package:application_one/core/utils/image_circle.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
-import 'package:application_one/feature/profile/presentation/pages/edit_profile.dart';
-import 'package:application_one/feature/profile/presentation/pages/settings.dart';
 import 'package:application_one/core/common/widgets/show_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class UserProfileScreen extends StatefulWidget {
+  final String userId;
+  const UserProfileScreen({super.key, required this.userId});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _UserProfileScreenState extends State<UserProfileScreen> {
   String? _name;
   String? _description;
   String? _imageUrl;
 
-@override
-void initState() {
-  super.initState();
-  _fetchUserProfile();
-
-  final user = Supabase.instance.client.auth.currentUser;
-  if (user != null) {
-    context.read<ProfileBloc>().add(FetchProfilePostsEvent(user.id));
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+    context.read<ProfileBloc>().add(FetchProfilePostsEvent(widget.userId));
   }
-}
 
-  Future<void> _fetchUserProfile() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) return;
+Future<void> _fetchUserProfile() async {
+  try {
+    final response = await Supabase.instance.client
+        .from('users')
+        .select('metadata')
+        .eq('id', widget.userId)
+        .single();
 
-    final metadata = user.userMetadata;
+    final metadata = response['metadata'];
 
     setState(() {
       _name = metadata?['name'] ?? 'User';
       _description = metadata?['description'] ?? 'No description available';
       _imageUrl = metadata?['image'];
     });
+  } catch (e) {
+    debugPrint('Error fetching user profile: $e');
+    setState(() {
+      _name = 'User';
+      _description = 'No description available';
+      _imageUrl = null;
+    });
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => const Settings()));
-            },
-            icon: const Icon(Icons.settings),
-          )
-        ],
-      ),
+      appBar: AppBar(),
       body: DefaultTabController(
         length: 1,
         child: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                expandedHeight: 160,
-                collapsedHeight: 160,
+                expandedHeight: 220,
+                collapsedHeight: 220,
                 automaticallyImplyLeading: false,
                 flexibleSpace: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -109,20 +108,7 @@ void initState() {
                           children: [
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const EditProfile(),
-                                    ),
-                                  );
-
-                                  if (result == true) {
-                                    setState(() {
-                                      _fetchUserProfile();
-                                    });
-                                  }
-                                },
+                                onPressed: () {},
                                 style: ButtonStyle(
                                   shape: WidgetStatePropertyAll(
                                     RoundedRectangleBorder(
@@ -130,7 +116,7 @@ void initState() {
                                     ),
                                   ),
                                 ),
-                                child: const Text('Edit Profile'),
+                                child: const Text('Message'),
                               ),
                             ),
                             const SizedBox(width: 20),
@@ -144,7 +130,7 @@ void initState() {
                                     ),
                                   ),
                                 ),
-                                child: const Text('Show Profile'),
+                                child: const Text('Follow'),
                               ),
                             ),
                           ],
@@ -193,7 +179,12 @@ void initState() {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ImagePreviewScreen(imageUrl: post.image!,likesCount: post.likeCount ?? 0, commentsCount: post.commentCount ?? 0,post: post,),
+                                  builder: (context) => ImagePreviewScreen(
+                                    imageUrl: post.image!,
+                                    likesCount: post.likeCount ?? 0,
+                                    commentsCount: post.commentCount ?? 0,
+                                    post: post,
+                                  ),
                                 ),
                               );
                             },
@@ -246,8 +237,8 @@ void initState() {
       ),
     );
   }
-}
 
+}
 
 // SliverPersistentHeader
 class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {

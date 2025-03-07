@@ -1,12 +1,12 @@
 import 'package:application_one/core/common/entities/user.dart';
 import 'package:application_one/core/error/failure.dart';
-import 'package:application_one/feature/messages/data/datasource/message_remote_data_source.dart';
-import 'package:application_one/feature/messages/domain/repository/message_repository.dart';
+import 'package:application_one/feature/search/data/datasource/search_remote_data_source.dart';
+import 'package:application_one/feature/search/domain/repository/search_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
-class MessageRepositoryImpl implements MessageRepository {
-  final MessageRemoteDataSource remoteDataSource;
-  MessageRepositoryImpl(this.remoteDataSource);
+class SearchRepositoryImpl implements SearchRepository {
+  final SearchRemoteDataSource remoteDataSource;
+  SearchRepositoryImpl(this.remoteDataSource);
   
   @override
   Future<Either<Failure, List<User>>> searchUsers(String name) async {

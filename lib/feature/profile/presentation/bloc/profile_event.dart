@@ -17,5 +17,6 @@ class ProfileUploadEvent extends ProfileEvent {
 }
 
 class FetchProfilePostsEvent extends ProfileEvent {
-   FetchProfilePostsEvent();
+  final String userId;
+   FetchProfilePostsEvent(this.userId);
 }

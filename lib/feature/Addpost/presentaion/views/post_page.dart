@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:application_one/feature/Addpost/presentaion/bloc/post_bloc.dart';
+import 'package:application_one/feature/addpost/presentaion/bloc/post_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:application_one/core/utils/image_circle.dart';

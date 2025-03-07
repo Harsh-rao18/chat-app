@@ -52,7 +52,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     on<FetchProfilePostsEvent>((event, emit) async {
       emit(ProfileLoading());
-       final result = await _fetchProfilePostUsecase(NoParams());
+       final result = await _fetchProfilePostUsecase(FetchProfilePostParams(event.userId));
 
     result.fold(
       (failure) => emit(ProfileError(_mapFailureToMessage(failure))),

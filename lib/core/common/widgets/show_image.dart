@@ -1,15 +1,18 @@
+import 'package:application_one/core/common/entities/post.dart';
+import 'package:application_one/feature/home/presentation/pages/comment_page.dart';
 import 'package:flutter/material.dart';
 
 class ImagePreviewScreen extends StatelessWidget {
   final String imageUrl;
   final int likesCount;
   final int commentsCount;
+  final Post post;
 
   const ImagePreviewScreen({
     super.key,
     required this.imageUrl,
     required this.likesCount,
-    required this.commentsCount,
+    required this.commentsCount, required this.post,
   });
 
   @override
@@ -62,7 +65,16 @@ class ImagePreviewScreen extends StatelessWidget {
                 // Comment Icon with Count
                 Row(
                   children: [
-                    const Icon(Icons.comment, color: Colors.white, size: 24),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CommentPage(post: post)));
+                      },
+                      child: const Icon(Icons.comment,
+                          color: Colors.white, size: 24),
+                    ),
                     const SizedBox(width: 5),
                     Text(
                       commentsCount.toString(),

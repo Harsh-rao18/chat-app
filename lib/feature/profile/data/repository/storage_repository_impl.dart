@@ -42,9 +42,9 @@ class StorageRepositoryImpl implements StorageRepository {
   }
 
   @override
-  Future<Either<Failure, List<Post>>> fetchPost() async {
+  Future<Either<Failure, List<Post>>> fetchPost(String userId) async {
     try {
-      final post = await remoteDataSource.fetchPost();
+      final post = await remoteDataSource.fetchPost(userId);
       return right(post);
     } catch (e) {
       return left(Failure(e.toString()));

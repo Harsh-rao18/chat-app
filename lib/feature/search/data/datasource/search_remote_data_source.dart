@@ -2,13 +2,13 @@ import 'package:application_one/core/common/model/user_model.dart';
 import 'package:application_one/core/error/exception.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-abstract interface class MessageRemoteDataSource {
+abstract interface class SearchRemoteDataSource {
   Future<List<UserModel>> searchUser(String name);
 }
 
-class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
+class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
   final SupabaseClient supabaseClient;
-  MessageRemoteDataSourceImpl(this.supabaseClient);
+  SearchRemoteDataSourceImpl(this.supabaseClient);
 
   @override
   Future<List<UserModel>> searchUser(String name) async {

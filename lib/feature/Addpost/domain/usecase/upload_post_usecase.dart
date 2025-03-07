@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:application_one/core/common/usecase/usecase.dart';
 import 'package:application_one/core/error/failure.dart';
-import 'package:application_one/feature/Addpost/domain/repository/post_repository.dart';
+import 'package:application_one/feature/addpost/domain/repository/post_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
 class UploadPostUsecase implements UseCase<void, UploadPostUsecaseParams> {
