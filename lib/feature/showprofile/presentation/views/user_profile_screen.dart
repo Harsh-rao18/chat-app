@@ -1,4 +1,5 @@
 import 'package:application_one/core/utils/image_circle.dart';
+import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:application_one/core/common/widgets/show_image.dart';
 import 'package:flutter/material.dart';
@@ -17,40 +18,110 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   String? _name;
   String? _description;
   String? _imageUrl;
+  bool isFollowing = false;
+  String? currentUserId;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserProfile();
-    context.read<ProfileBloc>().add(FetchProfilePostsEvent(widget.userId));
+    _initializeUser();
   }
 
-Future<void> _fetchUserProfile() async {
-  try {
-    final response = await Supabase.instance.client
-        .from('users')
-        .select('metadata')
-        .eq('id', widget.userId)
-        .single();
+  Future<void> _initializeUser() async {
+    final authClient = Supabase.instance.client.auth;
+    var user = authClient.currentUser;
 
-    final metadata = response['metadata'];
+    if (user == null) {
+      debugPrint('🔄 Refreshing session...');
+      await authClient.refreshSession();
+      user = authClient.currentUser;
+    }
 
-    setState(() {
-      _name = metadata?['name'] ?? 'User';
-      _description = metadata?['description'] ?? 'No description available';
-      _imageUrl = metadata?['image'];
-    });
-  } catch (e) {
-    debugPrint('Error fetching user profile: $e');
-    setState(() {
-      _name = 'User';
-      _description = 'No description available';
-      _imageUrl = null;
-    });
+    if (user != null) {
+      debugPrint('✅ User authenticated: ${user.id}');
+      setState(() => currentUserId = user?.id);
+      _fetchUserProfile();
+      context.read<ProfileBloc>().add(FetchProfilePostsEvent(widget.userId));
+      _checkIfFollowing();
+    } else {
+      debugPrint('❌ User is not logged in.');
+    }
   }
-}
 
+  Future<void> _fetchUserProfile() async {
+    try {
+      debugPrint('📡 Fetching profile for user ID: ${widget.userId}');
+      final response = await Supabase.instance.client
+          .from('users')
+          .select('metadata')
+          .eq('id', widget.userId)
+          .maybeSingle();
 
+      if (response == null) {
+        debugPrint('⚠️ No user found.');
+        return;
+      }
+
+      final metadata = response['metadata'];
+      setState(() {
+        _name = metadata?['name'] ?? 'User';
+        _description = metadata?['description'] ?? 'No description available';
+        _imageUrl = metadata?['image'];
+      });
+
+      debugPrint('✅ Profile loaded: $_name');
+    } catch (e) {
+      debugPrint('❌ Error fetching user profile: $e');
+    }
+  }
+
+  Future<void> _checkIfFollowing() async {
+    if (currentUserId == null) {
+      debugPrint('⚠️ Cannot check follow status. User ID is null.');
+      return;
+    }
+
+    try {
+      debugPrint(
+          '🔍 Checking if user $currentUserId follows ${widget.userId}...');
+      final response = await Supabase.instance.client
+          .from('followers')
+          .select()
+          .eq('follower_id', currentUserId!)
+          .eq('following_id', widget.userId)
+          .maybeSingle();
+
+      debugPrint(response != null
+          ? '✅ User is following.'
+          : '❌ User is NOT following.');
+
+      setState(() => isFollowing = response != null);
+    } catch (e) {
+      debugPrint('❌ Error checking follow status: $e');
+    }
+  }
+
+  Future<void> _toggleFollow() async {
+    if (currentUserId == null) return;
+
+    try {
+      if (isFollowing) {
+        debugPrint('🚫 Unfollowing user...');
+        context
+            .read<FollowerBloc>()
+            .add(UnfollowUserEvent(currentUserId!, widget.userId));
+      } else {
+        debugPrint('✅ Following user...');
+        context
+            .read<FollowerBloc>()
+            .add(FollowUserEvent(currentUserId!, widget.userId));
+      }
+
+      setState(() => isFollowing = !isFollowing);
+    } catch (e) {
+      debugPrint('❌ Follow/unfollow error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +160,8 @@ Future<void> _fetchUserProfile() async {
                                 ),
                                 const SizedBox(height: 5),
                                 SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.70,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.70,
                                   child: Text(
                                     _description ?? 'Loading...',
                                     maxLines: 3,
@@ -108,7 +180,7 @@ Future<void> _fetchUserProfile() async {
                           children: [
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: () {},
+                                onPressed: () {}, // Handle message logic
                                 style: ButtonStyle(
                                   shape: WidgetStatePropertyAll(
                                     RoundedRectangleBorder(
@@ -122,7 +194,7 @@ Future<void> _fetchUserProfile() async {
                             const SizedBox(width: 20),
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: () {},
+                                onPressed: _toggleFollow,
                                 style: ButtonStyle(
                                   shape: WidgetStatePropertyAll(
                                     RoundedRectangleBorder(
@@ -130,7 +202,8 @@ Future<void> _fetchUserProfile() async {
                                     ),
                                   ),
                                 ),
-                                child: const Text('Follow'),
+                                child:
+                                    Text(isFollowing ? 'Unfollow' : 'Follow'),
                               ),
                             ),
                           ],
@@ -162,68 +235,39 @@ Future<void> _fetchUserProfile() async {
                     if (posts.isEmpty) {
                       return const Center(child: Text('No posts available.'));
                     }
-                    return Padding(
+                    return GridView.builder(
                       padding: const EdgeInsets.all(8.0),
-                      child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.85,
-                        ),
-                        itemCount: posts.length,
-                        itemBuilder: (context, index) {
-                          final post = posts[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ImagePreviewScreen(
-                                    imageUrl: post.image!,
-                                    likesCount: post.likeCount ?? 0,
-                                    commentsCount: post.commentCount ?? 0,
-                                    post: post,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Hero(
-                              tag: post.image!,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 4,
-                                      spreadRadius: 1,
-                                    ),
-                                  ],
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: post.image != null
-                                      ? Image.network(
-                                          post.image!,
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : const Center(
-                                          child: Icon(
-                                            Icons.image_not_supported,
-                                            size: 40,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.85,
+                      ),
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        final post = posts[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ImagePreviewScreen(
+                                  imageUrl: post.image!,
+                                  likesCount: post.likeCount ?? 0,
+                                  commentsCount: post.commentCount ?? 0,
+                                  post: post,
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                          child: Hero(
+                            tag: post.image!,
+                            child:
+                                Image.network(post.image!, fit: BoxFit.cover),
+                          ),
+                        );
+                      },
                     );
                   } else if (state is ProfileError) {
                     return Center(child: Text(state.message));
@@ -237,7 +281,6 @@ Future<void> _fetchUserProfile() async {
       ),
     );
   }
-
 }
 
 // SliverPersistentHeader
@@ -252,7 +295,8 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: Colors.black,
       child: _tabBar,

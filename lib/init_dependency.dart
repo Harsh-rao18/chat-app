@@ -9,6 +9,14 @@ import 'package:application_one/feature/auth/domain/usecase/sign_in_usecase.dart
 import 'package:application_one/feature/auth/domain/usecase/sign_out_usecase.dart';
 import 'package:application_one/feature/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
+import 'package:application_one/feature/followers/data/datasource/follower_remote_data_source.dart';
+import 'package:application_one/feature/followers/data/repository/follower_repository_impl.dart';
+import 'package:application_one/feature/followers/domain/repository/follower_repository.dart';
+import 'package:application_one/feature/followers/domain/usecase/follow_user_usecase.dart';
+import 'package:application_one/feature/followers/domain/usecase/get_follower_usecase.dart';
+import 'package:application_one/feature/followers/domain/usecase/get_following_usecase.dart';
+import 'package:application_one/feature/followers/domain/usecase/unfollow_user_usecase.dart';
+import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
 import 'package:application_one/feature/home/data/datasource/home_remote_data_source.dart';
 import 'package:application_one/feature/home/data/repository/home_reppository_impl.dart';
 import 'package:application_one/feature/home/domain/repository/home_repository.dart';
@@ -63,6 +71,7 @@ Future<void> initDependency() async {
   _fetchNotification();
   _searchUser();
   _getUserProfile();
+  _followers();
 }
 
 void _initAuth() {
@@ -278,6 +287,48 @@ void _getUserProfile() {
   servicelocator.registerLazySingleton(
     () => UserProfileBloc(
       servicelocator(),
+    ),
+  );
+}
+
+void _followers() {
+  servicelocator.registerFactory<FollowerRemoteDataSource>(
+    () => FollowerRemoteDataSourceImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory<FollowerRepository>(
+    () => FollowerRepositoryImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => FollowUserUsecase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => UnfollowUserUsecase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => GetFollowerUsecase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => GetFollowingUsecase(
+      servicelocator(),
+    ),
+  );
+
+  servicelocator.registerLazySingleton(
+    () => FollowerBloc(
+      followUserUsecase: servicelocator(),
+      unfollowUserUsecase: servicelocator(),
+      getFollowerUsecase: servicelocator(),
+      getFollowingUsecase: servicelocator(),
     ),
   );
 }

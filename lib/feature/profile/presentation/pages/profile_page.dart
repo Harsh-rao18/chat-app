@@ -3,6 +3,7 @@ import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.d
 import 'package:application_one/feature/profile/presentation/pages/edit_profile.dart';
 import 'package:application_one/feature/profile/presentation/pages/settings.dart';
 import 'package:application_one/core/common/widgets/show_image.dart';
+import 'package:application_one/feature/profile/presentation/widgets/profile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -19,16 +20,16 @@ class _ProfilePageState extends State<ProfilePage> {
   String? _description;
   String? _imageUrl;
 
-@override
-void initState() {
-  super.initState();
-  _fetchUserProfile();
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
 
-  final user = Supabase.instance.client.auth.currentUser;
-  if (user != null) {
-    context.read<ProfileBloc>().add(FetchProfilePostsEvent(user.id));
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      context.read<ProfileBloc>().add(FetchProfilePostsEvent(user.id));
+    }
   }
-}
 
   Future<void> _fetchUserProfile() async {
     final user = Supabase.instance.client.auth.currentUser;
@@ -50,8 +51,8 @@ void initState() {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => const Settings()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Settings()));
             },
             icon: const Icon(Icons.settings),
           )
@@ -90,7 +91,8 @@ void initState() {
                                 ),
                                 const SizedBox(height: 5),
                                 SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.70,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.70,
                                   child: Text(
                                     _description ?? 'Loading...',
                                     maxLines: 3,
@@ -136,7 +138,20 @@ void initState() {
                             const SizedBox(width: 20),
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProfileCard(
+                                        profileImageUrl: _imageUrl!,
+                                        name: _name!,
+                                        description: _description!,
+                                        followers: 0,
+                                        following: 0,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 style: ButtonStyle(
                                   shape: WidgetStatePropertyAll(
                                     RoundedRectangleBorder(
@@ -179,7 +194,8 @@ void initState() {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
@@ -193,7 +209,12 @@ void initState() {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ImagePreviewScreen(imageUrl: post.image!,likesCount: post.likeCount ?? 0, commentsCount: post.commentCount ?? 0,post: post,),
+                                  builder: (context) => ImagePreviewScreen(
+                                    imageUrl: post.image!,
+                                    likesCount: post.likeCount ?? 0,
+                                    commentsCount: post.commentCount ?? 0,
+                                    post: post,
+                                  ),
                                 ),
                               );
                             },
@@ -248,7 +269,6 @@ void initState() {
   }
 }
 
-
 // SliverPersistentHeader
 class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
@@ -261,7 +281,8 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: Colors.black,
       child: _tabBar,
