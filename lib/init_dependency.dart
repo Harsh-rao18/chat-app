@@ -13,7 +13,9 @@ import 'package:application_one/feature/followers/data/datasource/follower_remot
 import 'package:application_one/feature/followers/data/repository/follower_repository_impl.dart';
 import 'package:application_one/feature/followers/domain/repository/follower_repository.dart';
 import 'package:application_one/feature/followers/domain/usecase/follow_user_usecase.dart';
+import 'package:application_one/feature/followers/domain/usecase/get_follower_count_usecase.dart';
 import 'package:application_one/feature/followers/domain/usecase/get_follower_usecase.dart';
+import 'package:application_one/feature/followers/domain/usecase/get_following_count_usecase.dart';
 import 'package:application_one/feature/followers/domain/usecase/get_following_usecase.dart';
 import 'package:application_one/feature/followers/domain/usecase/unfollow_user_usecase.dart';
 import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
@@ -322,6 +324,16 @@ void _followers() {
       servicelocator(),
     ),
   );
+  servicelocator.registerFactory(
+    () => GetFollowerCountUsecase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => GetFollowingCountUsecase(
+      servicelocator(),
+    ),
+  );
 
   servicelocator.registerLazySingleton(
     () => FollowerBloc(
@@ -329,6 +341,8 @@ void _followers() {
       unfollowUserUsecase: servicelocator(),
       getFollowerUsecase: servicelocator(),
       getFollowingUsecase: servicelocator(),
+      getFollowerCountUsecase: servicelocator(),
+      getFollowingCountUsecase: servicelocator(),
     ),
   );
 }

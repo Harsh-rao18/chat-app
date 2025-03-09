@@ -27,6 +27,16 @@ final class FollowerFollowingLoaded extends FollowerState {
   List<Object> get props => [following];
 }
 
+class FollowersCountLoaded extends FollowerState {
+  final int count;
+  const FollowersCountLoaded(this.count);
+}
+
+class FollowingCountLoaded extends FollowerState {
+  final int count;
+  const FollowingCountLoaded(this.count);
+}
+
 final class FollowerError extends FollowerState {
   final String message;
   const FollowerError(this.message);

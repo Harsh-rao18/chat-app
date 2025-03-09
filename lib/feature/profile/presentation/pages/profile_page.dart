@@ -139,18 +139,22 @@ class _ProfilePageState extends State<ProfilePage> {
                             Expanded(
                               child: OutlinedButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ProfileCard(
-                                        profileImageUrl: _imageUrl!,
-                                        name: _name!,
-                                        description: _description!,
-                                        followers: 0,
-                                        following: 0,
+                                  final userId = Supabase
+                                      .instance.client.auth.currentUser?.id;
+                                  if (userId != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProfileCard(
+                                          profileImageUrl: _imageUrl ?? '',
+                                          name: _name ?? '',
+                                          description: _description ?? '',
+                                          userId:
+                                              userId, // Ensure userId is passed correctly
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  }
                                 },
                                 style: ButtonStyle(
                                   shape: WidgetStatePropertyAll(

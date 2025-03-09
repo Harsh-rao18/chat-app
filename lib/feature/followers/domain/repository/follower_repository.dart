@@ -15,4 +15,7 @@ abstract interface class FollowerRepository {
 
   Future<Either<Failure, List<Followers>>> getFollowers(String userId);
   Future<Either<Failure, List<Followers>>> getFollowing(String userId);
+
+    Future<Either<Failure,int>> getFollowersCount(String userId);
+    Future<Either<Failure,int>> getFollowingCount(String userId);
 }

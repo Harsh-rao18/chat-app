@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
 
 class ProfileCard extends StatefulWidget {
   final String profileImageUrl;
   final String name;
   final String description;
-  final int followers;
-  final int following;
+  final String userId; // Use userId to fetch counts
 
   const ProfileCard({
     super.key,
     required this.profileImageUrl,
     required this.name,
     required this.description,
-    required this.followers,
-    required this.following,
+    required this.userId,
   });
 
   @override
@@ -22,6 +22,14 @@ class ProfileCard extends StatefulWidget {
 
 class _ProfileCardState extends State<ProfileCard> {
   bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Dispatch events to fetch followers and following count
+    context.read<FollowerBloc>().add(FetchFollowersCount(widget.userId));
+    context.read<FollowerBloc>().add(FetchFollowingCount(widget.userId));
+  }
 
   void _toggleExpand() {
     setState(() {
@@ -61,7 +69,8 @@ class _ProfileCardState extends State<ProfileCard> {
                   duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOut,
                   transform: _isExpanded
-                      ? (Matrix4.identity()..scale(1.1)) // Fixed ternary condition
+                      ? (Matrix4.identity()
+                        ..scale(1.1)) // Fixed ternary condition
                       : Matrix4.identity(),
                   child: CircleAvatar(
                     radius: 50,
@@ -89,9 +98,14 @@ class _ProfileCardState extends State<ProfileCard> {
                       child: Text(
                         widget.description,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 14, color: Colors.white70),
-                        maxLines: _isExpanded ? null : 2, // Show limited lines if not expanded
-                        overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 14, color: Colors.white70),
+                        maxLines: _isExpanded
+                            ? null
+                            : 2, // Show limited lines if not expanded
+                        overflow: _isExpanded
+                            ? TextOverflow.visible
+                            : TextOverflow.ellipsis,
                       ),
                     ),
                   ),
@@ -102,28 +116,48 @@ class _ProfileCardState extends State<ProfileCard> {
                   children: [
                     Column(
                       children: [
-                        Text(
-                          widget.followers.toString(),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                        BlocBuilder<FollowerBloc, FollowerState>(
+                          buildWhen: (previous, current) =>
+                              current is FollowersCountLoaded,
+                          builder: (context, state) {
+                            final count = (state is FollowersCountLoaded)
+                                ? state.count
+                                : 0;
+                            return Text(
+                              count.toString(),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
                         ),
-                        const Text("Followers", style: TextStyle(color: Colors.white70)),
+                        const Text("Followers",
+                            style: TextStyle(color: Colors.white70)),
                       ],
                     ),
                     Column(
                       children: [
-                        Text(
-                          widget.following.toString(),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                        BlocBuilder<FollowerBloc, FollowerState>(
+                          buildWhen: (previous, current) =>
+                              current is FollowingCountLoaded,
+                          builder: (context, state) {
+                            final count = (state is FollowingCountLoaded)
+                                ? state.count
+                                : 0;
+                            return Text(
+                              count.toString(),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
                         ),
-                        const Text("Following", style: TextStyle(color: Colors.white70)),
+                        const Text("Following",
+                            style: TextStyle(color: Colors.white70)),
                       ],
                     ),
                   ],

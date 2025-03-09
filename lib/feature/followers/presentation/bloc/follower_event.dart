@@ -44,3 +44,13 @@ class GetFollowingEvent extends FollowerEvent {
   @override
   List<Object> get props => [userId];
 }
+
+class FetchFollowersCount extends FollowerEvent {
+  final String userId;
+  const FetchFollowersCount(this.userId);
+}
+
+class FetchFollowingCount extends FollowerEvent {
+  final String userId;
+  const FetchFollowingCount(this.userId);
+}

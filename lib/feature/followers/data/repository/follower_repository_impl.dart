@@ -51,4 +51,25 @@ class FollowerRepositoryImpl implements FollowerRepository {
       return Left(Failure(e.message)); // Fix: Specific error handling
     }
   }
+  
+  @override
+  Future<Either<Failure, int>> getFollowersCount(String userId) async {
+    try {
+      final res = await remoteDataSource.getFollowersCount(userId);
+      return Right(res);
+    } catch (e) {
+      return Left(Failure(e.toString()));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, int>> getFollowingCount(String userId) async {
+    try {
+      final res = await remoteDataSource.getFollowingCount(userId);
+      return Right(res);
+    } catch (e) {
+      return Left(Failure(e.toString()));
+    }
+  }
+
 }
