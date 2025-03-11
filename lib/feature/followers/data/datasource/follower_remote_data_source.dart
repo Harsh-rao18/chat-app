@@ -44,37 +44,70 @@ class FollowerRemoteDataSourceImpl implements FollowerRemoteDataSource {
     }
   }
 
-  @override
-  Future<List<FollowersModel>> getFollowers(String userId) async {
-    try {
-      final response = await supabaseClient
-          .from('followers')
-          .select()
-          .eq('following_id', userId);
+@override
+Future<List<FollowersModel>> getFollowers(String userId) async {
+  try {
+    final response = await supabaseClient
+        .from('followers')
+        .select('follower_id, created_at, users!followers_follower_id_fkey(id, metadata)')
+        .eq('following_id', userId);
 
-      return response.map((e) => FollowersModel.fromMap(e)).toList();
-    } on PostgrestException catch (e) {
-      throw ServerException('Failed to get followers: ${e.message}');
-    } catch (e) {
-      throw ServerException('Unexpected error while fetching followers: $e');
-    }
+    return response.map((e) {
+      final metadata = (e['users'] != null && e['users']['metadata'] != null)
+          ? e['users']['metadata']
+          : {}; // Ensure metadata is not null
+
+      return FollowersModel(
+        id: e['follower_id'] as String? ?? '',  // Handle possible nulls
+        followerId: e['follower_id'] as String? ?? '',
+        followingId: userId,
+        createdAt: e['created_at'] != null
+            ? DateTime.tryParse(e['created_at']) ?? DateTime.now()
+            : DateTime.now(), // Avoid null parsing errors
+        name: metadata['name'] as String? ?? 'Unknown',
+        image: metadata['image'] as String? ?? '',
+      );
+    }).toList();
+  } on PostgrestException catch (e) {
+    throw ServerException('Failed to fetch followers: ${e.message}');
+  } catch (e) {
+    throw ServerException('Unexpected error while fetching followers: $e');
   }
+}
 
-  @override
-  Future<List<FollowersModel>> getFollowing(String userId) async {
-    try {
-      final response = await supabaseClient
-          .from('followers')
-          .select()
-          .eq('follower_id', userId);
 
-      return response.map((e) => FollowersModel.fromMap(e)).toList();
-    } on PostgrestException catch (e) {
-      throw ServerException('Failed to get following list: ${e.message}');
-    } catch (e) {
-      throw ServerException('Unexpected error while fetching following list: $e');
-    }
+@override
+Future<List<FollowersModel>> getFollowing(String userId) async {
+  try {
+    final response = await supabaseClient
+        .from('followers')
+        .select('following_id, created_at, users!followers_following_id_fkey(id, metadata)')
+        .eq('follower_id', userId);
+
+    return response.map((e) {
+      final metadata = (e['users'] != null && e['users']['metadata'] != null)
+          ? e['users']['metadata']
+          : {}; // Ensure metadata is not null
+
+      return FollowersModel(
+        id: e['following_id'] as String? ?? '',  // Handle possible nulls
+        followerId: userId,
+        followingId: e['following_id'] as String? ?? '',
+        createdAt: e['created_at'] != null
+            ? DateTime.tryParse(e['created_at']) ?? DateTime.now()
+            : DateTime.now(), // Avoid null parsing errors
+        name: metadata['name'] as String? ?? 'Unknown',
+        image: metadata['image'] as String? ?? '',
+      );
+    }).toList();
+  } on PostgrestException catch (e) {
+    throw ServerException('Failed to fetch following: ${e.message}');
+  } catch (e) {
+    throw ServerException('Unexpected error while fetching following: $e');
   }
+}
+
+
 
 @override
 Future<int> getFollowersCount(String userId) async {

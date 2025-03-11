@@ -1,3 +1,5 @@
+import 'package:application_one/feature/followers/presentation/views/follower_scrren.dart';
+import 'package:application_one/feature/followers/presentation/views/following_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
@@ -114,51 +116,75 @@ class _ProfileCardState extends State<ProfileCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Column(
-                      children: [
-                        BlocBuilder<FollowerBloc, FollowerState>(
-                          buildWhen: (previous, current) =>
-                              current is FollowersCountLoaded,
-                          builder: (context, state) {
-                            final count = (state is FollowersCountLoaded)
-                                ? state.count
-                                : 0;
-                            return Text(
-                              count.toString(),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            );
-                          },
-                        ),
-                        const Text("Followers",
-                            style: TextStyle(color: Colors.white70)),
-                      ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FollowersScreen(
+                              userId: widget.userId,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          BlocBuilder<FollowerBloc, FollowerState>(
+                            buildWhen: (previous, current) =>
+                                current is FollowersCountLoaded,
+                            builder: (context, state) {
+                              final count = (state is FollowersCountLoaded)
+                                  ? state.count
+                                  : 0;
+                              return Text(
+                                count.toString(),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                          const Text("Followers",
+                              style: TextStyle(color: Colors.white70)),
+                        ],
+                      ),
                     ),
-                    Column(
-                      children: [
-                        BlocBuilder<FollowerBloc, FollowerState>(
-                          buildWhen: (previous, current) =>
-                              current is FollowingCountLoaded,
-                          builder: (context, state) {
-                            final count = (state is FollowingCountLoaded)
-                                ? state.count
-                                : 0;
-                            return Text(
-                              count.toString(),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            );
-                          },
-                        ),
-                        const Text("Following",
-                            style: TextStyle(color: Colors.white70)),
-                      ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FollowingScreen(
+                              userId: widget.userId,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          BlocBuilder<FollowerBloc, FollowerState>(
+                            buildWhen: (previous, current) =>
+                                current is FollowingCountLoaded,
+                            builder: (context, state) {
+                              final count = (state is FollowingCountLoaded)
+                                  ? state.count
+                                  : 0;
+                              return Text(
+                                count.toString(),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                          const Text("Following",
+                              style: TextStyle(color: Colors.white70)),
+                        ],
+                      ),
                     ),
                   ],
                 ),
