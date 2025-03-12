@@ -12,7 +12,10 @@ import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/chat/data/datasource/chat_remote_data_source.dart';
 import 'package:application_one/feature/chat/data/repository/chat_repository_impl.dart';
 import 'package:application_one/feature/chat/domain/repository/chat_repository.dart';
+import 'package:application_one/feature/chat/domain/usecase/fetch_message_usecase.dart';
 import 'package:application_one/feature/chat/domain/usecase/get_or_create_chat_room_usecase.dart';
+import 'package:application_one/feature/chat/domain/usecase/listen_message_usecase.dart';
+import 'package:application_one/feature/chat/domain/usecase/send_message_usecase.dart';
 import 'package:application_one/feature/chat/presenataion/bloc/chat_bloc.dart';
 import 'package:application_one/feature/followers/data/datasource/follower_remote_data_source.dart';
 import 'package:application_one/feature/followers/data/repository/follower_repository_impl.dart';
@@ -369,9 +372,27 @@ _chat() {
       servicelocator(),
     ),
   );
+  servicelocator.registerFactory(
+    () => SendMessageUsecase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => FetchMessageUsecase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => ListenToMessagesUseCase(
+      servicelocator(),
+    ),
+  );
   servicelocator.registerLazySingleton(
     () => ChatBloc(
       createChatRoomUsecase: servicelocator(),
+      sendMessageUsecase: servicelocator(),
+      fetchMessageUsecase: servicelocator(),
+      listenToMessagesUseCase: servicelocator(),
     ),
   );
 }

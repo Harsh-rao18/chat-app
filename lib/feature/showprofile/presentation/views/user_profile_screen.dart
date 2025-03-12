@@ -1,5 +1,6 @@
 import 'package:application_one/core/utils/image_circle.dart';
 import 'package:application_one/feature/chat/presenataion/bloc/chat_bloc.dart';
+import 'package:application_one/feature/chat/presenataion/views/message_screen.dart';
 import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:application_one/core/common/widgets/show_image.dart';
@@ -179,24 +180,39 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       Flexible(
                         child: Row(
                           children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  context.read<ChatBloc>().add(
-                                        GetOrCreateChatRoom(
-                                          currentUserId!,
-                                          widget.userId,
-                                        ),
-                                      );
-                                },
-                                style: ButtonStyle(
-                                  shape: WidgetStatePropertyAll(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                            BlocListener<ChatBloc, ChatState>(
+                              listener: (context, state) {
+                                if (state is ChatRoomCreated) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MessageScreen(
+                                          chatRoomId: state.chatRoomId,
+                                          senderId: currentUserId!,
+                                          receiverId: widget.userId,),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    context.read<ChatBloc>().add(
+                                          GetOrCreateChatRoom(
+                                            currentUserId!,
+                                            widget.userId,
+                                          ),
+                                        );
+                                  },
+                                  style: ButtonStyle(
+                                    shape: WidgetStatePropertyAll(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
                                     ),
                                   ),
+                                  child: const Text('Message'),
                                 ),
-                                child: const Text('Message'),
                               ),
                             ),
                             const SizedBox(width: 20),
