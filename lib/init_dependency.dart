@@ -9,6 +9,11 @@ import 'package:application_one/feature/auth/domain/usecase/sign_in_usecase.dart
 import 'package:application_one/feature/auth/domain/usecase/sign_out_usecase.dart';
 import 'package:application_one/feature/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
+import 'package:application_one/feature/chat/data/datasource/chat_remote_data_source.dart';
+import 'package:application_one/feature/chat/data/repository/chat_repository_impl.dart';
+import 'package:application_one/feature/chat/domain/repository/chat_repository.dart';
+import 'package:application_one/feature/chat/domain/usecase/get_or_create_chat_room_usecase.dart';
+import 'package:application_one/feature/chat/presenataion/bloc/chat_bloc.dart';
 import 'package:application_one/feature/followers/data/datasource/follower_remote_data_source.dart';
 import 'package:application_one/feature/followers/data/repository/follower_repository_impl.dart';
 import 'package:application_one/feature/followers/domain/repository/follower_repository.dart';
@@ -74,6 +79,7 @@ Future<void> initDependency() async {
   _searchUser();
   _getUserProfile();
   _followers();
+  _chat();
 }
 
 void _initAuth() {
@@ -343,6 +349,29 @@ void _followers() {
       getFollowingUsecase: servicelocator(),
       getFollowerCountUsecase: servicelocator(),
       getFollowingCountUsecase: servicelocator(),
+    ),
+  );
+}
+
+_chat() {
+  servicelocator.registerFactory<ChatRemoteDataSource>(
+    () => ChatRemoteDataSourceImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory<ChatRepository>(
+    () => ChatRepositoryImpl(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerFactory(
+    () => GetOrCreateChatRoomUsecase(
+      servicelocator(),
+    ),
+  );
+  servicelocator.registerLazySingleton(
+    () => ChatBloc(
+      createChatRoomUsecase: servicelocator(),
     ),
   );
 }

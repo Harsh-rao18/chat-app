@@ -3,6 +3,7 @@ import 'package:application_one/core/common/cubit/app_user_cubit.dart';
 import 'package:application_one/feature/addpost/presentaion/bloc/post_bloc.dart';
 import 'package:application_one/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:application_one/feature/auth/presentation/views/login_page.dart';
+import 'package:application_one/feature/chat/presenataion/bloc/chat_bloc.dart';
 import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/main_page.dart';
@@ -28,6 +29,7 @@ void main() async {
       BlocProvider(create: (_) => servicelocator<SearchBloc>()),
       BlocProvider(create: (_) => servicelocator<UserProfileBloc>()),
       BlocProvider(create: (_) => servicelocator<FollowerBloc>()),
+      BlocProvider(create: (_) => servicelocator<ChatBloc>()),
     ],
     child: const MyApp(),
   ));

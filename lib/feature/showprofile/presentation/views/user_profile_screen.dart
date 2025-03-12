@@ -1,4 +1,5 @@
 import 'package:application_one/core/utils/image_circle.dart';
+import 'package:application_one/feature/chat/presenataion/bloc/chat_bloc.dart';
 import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
 import 'package:application_one/feature/profile/presentation/bloc/profile_bloc.dart';
 import 'package:application_one/core/common/widgets/show_image.dart';
@@ -180,7 +181,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           children: [
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: () {}, // Handle message logic
+                                onPressed: () {
+                                  context.read<ChatBloc>().add(
+                                        GetOrCreateChatRoom(
+                                          currentUserId!,
+                                          widget.userId,
+                                        ),
+                                      );
+                                },
                                 style: ButtonStyle(
                                   shape: WidgetStatePropertyAll(
                                     RoundedRectangleBorder(
