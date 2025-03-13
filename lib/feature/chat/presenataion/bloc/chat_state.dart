@@ -30,6 +30,7 @@ final class ChatRoomCreated extends ChatState {
   List<Object> get props => [chatRoomId];
 }
 
+
 final class ChatError extends ChatState {
   final String message;
 

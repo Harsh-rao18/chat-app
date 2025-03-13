@@ -13,6 +13,7 @@ abstract interface class ChatRemoteDataSource {
   Future<void> sendMessage(ChatMessageModel message);
   Future<List<ChatMessageModel>> fetchMessages(String chatRoomId);
   Stream<List<ChatMessageModel>> listenToMessages(String chatRoomId);
+
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
@@ -89,4 +90,5 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       throw ServerException(e.toString());
     }
   }
+  
 }

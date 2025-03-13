@@ -387,6 +387,7 @@ _chat() {
       servicelocator(),
     ),
   );
+
   servicelocator.registerLazySingleton(
     () => ChatBloc(
       createChatRoomUsecase: servicelocator(),

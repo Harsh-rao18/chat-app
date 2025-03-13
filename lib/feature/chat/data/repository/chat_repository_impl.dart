@@ -27,7 +27,8 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<Failure, List<ChatMessage>>> fetchMessages(String chatRoomId) async {
+  Future<Either<Failure, List<ChatMessage>>> fetchMessages(
+      String chatRoomId) async {
     try {
       final response = await remoteDataSource.fetchMessages(chatRoomId);
       final messages = response.map((e) => e.toEntity()).toList();
@@ -38,12 +39,17 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Stream<Either<Failure, List<ChatMessage>>> listenToMessages(String chatRoomId) {
-    return remoteDataSource.listenToMessages(chatRoomId).map(
-      (messages) => right<Failure, List<ChatMessage>>(messages.map((e) => e.toEntity()).toList()),
-    ).handleError(
-      (e) => left<Failure, List<ChatMessage>>(Failure(e.toString())),
-    );
+  Stream<Either<Failure, List<ChatMessage>>> listenToMessages(
+      String chatRoomId) {
+    return remoteDataSource
+        .listenToMessages(chatRoomId)
+        .map(
+          (messages) => right<Failure, List<ChatMessage>>(
+              messages.map((e) => e.toEntity()).toList()),
+        )
+        .handleError(
+          (e) => left<Failure, List<ChatMessage>>(Failure(e.toString())),
+        );
   }
 
   @override

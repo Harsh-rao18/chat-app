@@ -17,6 +17,7 @@ class GetOrCreateChatRoom extends ChatEvent {
   List<Object> get props => [user1, user2];
 }
 
+
 class LoadMessagesEvent extends ChatEvent {
   final String chatRoomId;
 

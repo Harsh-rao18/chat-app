@@ -13,4 +13,5 @@ abstract interface class ChatRepository {
   Future<Either<Failure, List<ChatMessage>>> fetchMessages(String chatRoomId);
   
   Stream<Either<Failure, List<ChatMessage>>> listenToMessages(String chatRoomId);
+
 }
