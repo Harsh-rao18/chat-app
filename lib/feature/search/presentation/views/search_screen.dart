@@ -87,15 +87,19 @@ class _SearchScreenState extends State<SearchScreen> {
                                   elevation: 2,
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.all(8),
-                                    leading: ImageCircle(radius: 20, url: user.metadata.image),
+                                    leading: ImageCircle(radius: 21, url: user.metadata.image),
                                     title: Text(
                                       user.metadata.name,
                                       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                                     ),
-                                    trailing: const Padding(
-                                      padding: EdgeInsets.only(right: 10),
-                                      child: Icon(Icons.message, color: Colors.blueAccent),
-                                    ),
+                                    trailing: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[800],
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: const Icon(Icons.arrow_forward, color: Colors.white),  
+                                    )
                                   ),
                                 ),
                               );

@@ -91,7 +91,7 @@ class _CommentPageState extends State<CommentPage> {
                     );
                   } else if (state is CommentsLoaded) {
                     final comments = state.comments;
-
+    
                     if (comments.isEmpty) {
                       return const Center(
                         child: Padding(
@@ -100,7 +100,7 @@ class _CommentPageState extends State<CommentPage> {
                         ),
                       );
                     }
-
+    
                     return ListView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       itemCount: comments.length,

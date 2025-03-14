@@ -139,10 +139,6 @@ class _PostCardBottomBarState extends State<PostCardBottomBar> {
                 },
                 icon: const Icon(Icons.chat_bubble_outline),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.send_outlined),
-              ),
             ],
           ),
           Row(

@@ -1,5 +1,6 @@
 import 'package:application_one/feature/followers/domain/entities/followers.dart';
 import 'package:application_one/feature/followers/presentation/bloc/follower_bloc.dart';
+import 'package:application_one/feature/showprofile/presentation/views/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
@@ -55,11 +56,20 @@ class _FollowersScreenState extends State<FollowersScreen> {
           highlightColor: Colors.grey[100]!,
           child: Card(
             margin: const EdgeInsets.symmetric(vertical: 8),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: const ListTile(
               leading: CircleAvatar(backgroundColor: Colors.white, radius: 25),
-              title: SizedBox(height: 15, width: 100, child: DecoratedBox(decoration: BoxDecoration(color: Colors.white))),
-              subtitle: SizedBox(height: 12, width: 50, child: DecoratedBox(decoration: BoxDecoration(color: Colors.white))),
+              title: SizedBox(
+                  height: 15,
+                  width: 100,
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.white))),
+              subtitle: SizedBox(
+                  height: 12,
+                  width: 50,
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.white))),
               trailing: Icon(Icons.person_remove, color: Colors.white),
             ),
           ),
@@ -81,14 +91,17 @@ class _FollowersScreenState extends State<FollowersScreen> {
             Text(
               "Error: $message",
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.red, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             ElevatedButton.icon(
               icon: const Icon(Icons.refresh),
               label: const Text("Retry"),
               onPressed: () {
-                context.read<FollowerBloc>().add(GetFollowersEvent(widget.userId));
+                context
+                    .read<FollowerBloc>()
+                    .add(GetFollowersEvent(widget.userId));
               },
             ),
           ],
@@ -101,7 +114,8 @@ class _FollowersScreenState extends State<FollowersScreen> {
   Widget _buildFollowersList(List<Followers> followers) {
     if (followers.isEmpty) {
       return const Center(
-        child: Text("No followers yet", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        child: Text("No followers yet",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
       );
     }
 
@@ -111,23 +125,35 @@ class _FollowersScreenState extends State<FollowersScreen> {
       itemBuilder: (context, index) {
         final follower = followers[index];
 
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          elevation: 3,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(10),
-            leading: _buildFollowerAvatar(follower),
-            title: Text(
-              follower.name.isNotEmpty ? follower.name : "Unknown",
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.person_remove, color: Colors.red),
-              onPressed: () {
-                // TODO: Add unfollow functionality here
+        return GestureDetector(
+          onTap: () {
+            // Navigate to follower profile
+            Navigator.push(context, MaterialPageRoute(
+              builder: (context) {
+                return UserProfileScreen(userId: follower.id);
               },
-            ),
+            ));
+          },
+          child: Card(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            elevation: 3,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: ListTile(
+                contentPadding: const EdgeInsets.all(10),
+                leading: _buildFollowerAvatar(follower),
+                title: Text(
+                  follower.name.isNotEmpty ? follower.name : "Unknown",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                trailing: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[800],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(Icons.arrow_forward, color: Colors.white),
+                )),
           ),
         );
       },
@@ -137,14 +163,16 @@ class _FollowersScreenState extends State<FollowersScreen> {
   /// 🖼️ Handles avatar fallback (profile image or initials)
   Widget _buildFollowerAvatar(Followers follower) {
     if (follower.image.isNotEmpty) {
-      return CircleAvatar(radius: 25, backgroundImage: NetworkImage(follower.image));
+      return CircleAvatar(
+          radius: 25, backgroundImage: NetworkImage(follower.image));
     } else {
       return CircleAvatar(
         radius: 25,
         backgroundColor: Colors.blueGrey,
         child: Text(
           follower.name.isNotEmpty ? follower.name[0].toUpperCase() : '?',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       );
     }
