@@ -2,6 +2,7 @@ import 'package:application_one/feature/chat/domain/entities/chat_message.dart';
 import 'package:application_one/feature/chat/presenataion/bloc/chat_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 class MessageScreen extends StatefulWidget {
@@ -24,12 +25,31 @@ class _MessageScreenState extends State<MessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
+  String? receiverName;
+  String? receiverProfileImage;
+
   @override
   void initState() {
     super.initState();
+    _fetchReceiverDetails();
     final chatBloc = BlocProvider.of<ChatBloc>(context);
     chatBloc.add(LoadMessagesEvent(widget.chatRoomId));
     chatBloc.add(StartListeningEvent(widget.chatRoomId));
+  }
+
+  Future<void> _fetchReceiverDetails() async {
+    final response = await Supabase.instance.client
+        .from('users')
+        .select('metadata')
+        .eq('id', widget.receiverId)
+        .single();
+
+    if (mounted) {
+      setState(() {
+        receiverName = response['metadata']['name'];
+        receiverProfileImage = response['metadata']['image'];
+      });
+    }
   }
 
   void _sendMessage() {
@@ -66,7 +86,22 @@ class _MessageScreenState extends State<MessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Chat")),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            if (receiverProfileImage != null)
+              CircleAvatar(
+                backgroundImage: NetworkImage(receiverProfileImage!),
+              )
+            else
+              const CircleAvatar(
+                child: Icon(Icons.person),
+              ),
+            const SizedBox(width: 10),
+            Text(receiverName ?? "Loading..."),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           Expanded(

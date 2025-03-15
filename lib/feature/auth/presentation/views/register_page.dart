@@ -79,10 +79,16 @@ class _RegisterPageState extends State<RegisterPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Image.asset(
-                          "assets/images/logo.png",
-                          height: 60,
-                          width: 60,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              40), // Adjust the radius as needed
+                          child: Image.asset(
+                            "assets/images/logo.png",
+                            height: 90,
+                            width: 90,
+                            fit: BoxFit
+                                .cover, // Ensures the image fills the rounded container properly
+                          ),
                         ),
                         const Align(
                           alignment: Alignment.topLeft,
@@ -101,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 5,
                               ),
                               Text(
-                                "Welcome to hi5!!",
+                                "Welcome to VOXA !!",
                               ),
                             ],
                           ),

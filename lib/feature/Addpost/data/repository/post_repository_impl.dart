@@ -37,4 +37,14 @@ class PostRepositoryImpl implements PostRepository {
       return left(Failure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deletePost(int postId) async {
+    try {
+      await postRemoteDataSource.deletePost(postId);
+      return right(null);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
 }

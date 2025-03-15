@@ -209,8 +209,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         itemBuilder: (context, index) {
                           final post = posts[index];
                           return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ImagePreviewScreen(
@@ -221,6 +221,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                               );
+
+                              // If post was deleted, trigger a refresh
+                              if (result == true) {
+                                final user =
+                                    Supabase.instance.client.auth.currentUser;
+                                if (user != null) {
+                                  context
+                                      .read<ProfileBloc>()
+                                      .add(FetchProfilePostsEvent(user.id));
+                                }
+                              }
                             },
                             child: Hero(
                               tag: post.image!,

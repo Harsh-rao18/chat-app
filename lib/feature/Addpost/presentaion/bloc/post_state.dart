@@ -17,6 +17,8 @@ class PostError extends PostState {
   const PostError(this.message);
 }
 
+class PostDelete extends PostState {}
+
 class PostImagePicked extends PostState {
   final File imagefile;
   const PostImagePicked(this.imagefile);

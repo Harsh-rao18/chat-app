@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:application_one/core/error/exception.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,6 +11,7 @@ abstract interface class PostRemoteDataSource {
   Future<File?> compressImage(File file);
   Future<String> uploadImage(String userId, File? file);
   Future<void> uploadPostData(String userId, String content, String file);
+  Future<void> deletePost(int postId);
 }
 
 class PostRemoteDataSourceImpl implements PostRemoteDataSource {
@@ -48,12 +50,36 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
   }
 
   @override
-  Future<void> uploadPostData(String userId, String content, String file) async {
+  Future<void> uploadPostData(
+      String userId, String content, String file) async {
     await supabaseClient.from('posts').insert({
-      "content" : content,
-      "user_id" : userId,
+      "content": content,
+      "user_id": userId,
       "image": file.isNotEmpty ? file : null,
-
     });
   }
+
+ @override
+Future<void> deletePost(int postId) async {
+  try {
+    final response = await supabaseClient
+        .from('posts')
+        .delete()
+        .eq('id', postId)
+        .select(); // Ensure a response is returned
+
+    // Debugging: Print the response
+    print("Delete response: $response");
+
+    if (response.isEmpty) {
+      throw ServerException("Failed to delete post: Response is null.");
+    }
+
+    print("Post deleted successfully");
+  } catch (e) {
+    print("Error deleting post: $e");
+    throw ServerException(e.toString());
+  }
+}
+
 }

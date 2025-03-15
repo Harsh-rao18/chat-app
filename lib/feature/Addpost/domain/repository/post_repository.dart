@@ -10,4 +10,6 @@ abstract interface class PostRepository {
     required String content,
     File? file,
   });
+
+  Future<Either<Failure, void>> deletePost(int postId);
 }

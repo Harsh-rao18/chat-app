@@ -35,11 +35,17 @@ class _HomePageState extends State<HomePage> {
               SliverAppBar(
                 title: Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 40,
-                    height: 40,
-                  ),
+                  child: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              10), // Adjust the radius as needed
+                          child: Image.asset(
+                            "assets/images/logo.png",
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit
+                                .cover, // Ensures the image fills the rounded container properly
+                          ),
+                        ),
                 ),
                 actions: [
                   IconButton(

@@ -1,5 +1,6 @@
 import 'package:application_one/core/common/cubit/app_user_cubit.dart';
 import 'package:application_one/core/secret/app_secret.dart';
+import 'package:application_one/feature/addpost/domain/usecase/delete_post_usecse.dart';
 import 'package:application_one/feature/addpost/domain/usecase/post_pick_image_use_case.dart';
 import 'package:application_one/feature/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:application_one/feature/auth/data/repository/auth_reposotory_impl.dart';
@@ -178,11 +179,13 @@ void _post() {
   );
   servicelocator.registerFactory(() => PostPickImageUseCase(servicelocator()));
   servicelocator.registerFactory(() => UploadPostUsecase(servicelocator()));
+  servicelocator.registerFactory(() => DeletePostUsecse(servicelocator()));
 
   servicelocator.registerLazySingleton(
     () => PostBloc(
       pickImageUseCase: servicelocator(),
       postUsecase: servicelocator(),
+      deletePostUsecse: servicelocator(),
     ),
   );
 }

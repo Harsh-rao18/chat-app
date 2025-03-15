@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Application One',
+      title: 'VOXA',
       theme: theme,
       home: BlocSelector<AppUserCubit, AppUserState, bool>(
         selector: (state) {

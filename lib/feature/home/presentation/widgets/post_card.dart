@@ -31,13 +31,13 @@ class PostCard extends StatelessWidget {
                   children: [
                     PostCardTopBar(post: post),
                     const SizedBox(height: 5),
+                    if (post.image != null)
+                      PostCardImage(post: post,),
+                    const SizedBox(height: 10),
                     Text(
                       post.content ?? "",
                       style: const TextStyle(fontSize: 14),
                     ),
-                    const SizedBox(height: 10),
-                    if (post.image != null)
-                      PostCardImage(post: post,),
                   ],
                 ),
               ),

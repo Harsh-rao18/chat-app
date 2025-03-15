@@ -110,8 +110,10 @@ class _ProfileCardState extends State<ProfileCard> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildCountContainer("Followers", followersCount, FollowersScreen(userId: widget.userId)),
-                    _buildCountContainer("Following", followingCount, FollowingScreen(userId: widget.userId)),
+                    _buildCountContainer("Followers", followersCount,
+                        FollowersScreen(userId: widget.userId)),
+                    _buildCountContainer("Following", followingCount,
+                        FollowingScreen(userId: widget.userId)),
                   ],
                 ),
               ),

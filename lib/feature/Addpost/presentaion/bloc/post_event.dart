@@ -16,3 +16,10 @@ class PostUploadEvent extends PostEvent {
 
   const PostUploadEvent({required this.userId, required this.content,  this.file});
 }
+
+class PostDeleteEvent extends PostEvent {
+  final int postId;
+
+  const PostDeleteEvent({required this.postId});
+
+}
