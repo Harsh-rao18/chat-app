@@ -5,6 +5,7 @@ import 'package:application_one/feature/home/domain/entities/comment.dart';
 import 'package:application_one/core/common/entities/post.dart';
 import 'package:application_one/feature/home/domain/entities/like.dart';
 import 'package:application_one/feature/home/domain/repository/home_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
@@ -26,30 +27,38 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<Either<Failure, void>> addReply({
     required String userId,
     required int postId,
-    required String postUserId,
     required String reply,
+    required String postUserId, // Added postUserId parameter
   }) async {
     try {
+      debugPrint("📝 [HomeRepositoryImpl] Adding reply...");
+      debugPrint("➡️ User ID: $userId");
+      debugPrint("➡️ Post ID: $postId");
+      debugPrint("➡️ Reply: $reply");
+      debugPrint("➡️ Post User ID: $postUserId"); // Log postUserId
+
       await homeRemoteDataSource.addReply(
         userId: userId,
         postId: postId,
-        postUserId: postUserId,
         reply: reply,
+        postUserId: postUserId, // Pass postUserId to data source
       );
+
+      debugPrint("✅ [HomeRepositoryImpl] Reply added successfully!");
       return right(null);
     } catch (e) {
-      return left(Failure(e.toString())); // ✅ Return failure message
+      debugPrint("❌ [HomeRepositoryImpl] Error adding reply: ${e.toString()}");
+      return left(Failure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, List<Comment>>> fetchComments(
-      {required int postId}) async {
+  Future<Either<Failure, List<Comment>>> fetchComments({required int postId}) async {
     try {
       final comments = await homeRemoteDataSource.fetchComments(postId: postId);
       return right(comments);
     } catch (e) {
-      return left(Failure(e.toString())); // ✅ Return failure message
+      return left(Failure(e.toString())); // Return failure message
     }
   }
 
@@ -61,9 +70,9 @@ class HomeRepositoryImpl implements HomeRepository {
           : LikeModel(userId: like.userId, postId: like.postId);
       final updatedLikeCount =
           await homeRemoteDataSource.toggleLike(like: likeModel);
-      return right(updatedLikeCount); // ✅ Correct type
+      return right(updatedLikeCount); // Correct type
     } catch (e) {
-      return left(Failure(e.toString())); // ✅ Proper error handling
+      return left(Failure(e.toString())); // Proper error handling
     }
   }
 }

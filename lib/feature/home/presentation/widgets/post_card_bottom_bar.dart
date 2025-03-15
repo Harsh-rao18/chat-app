@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:application_one/core/common/entities/post.dart';
 import 'package:application_one/feature/home/presentation/bloc/home_bloc.dart';
 import 'package:application_one/feature/home/presentation/pages/comment_page.dart';
@@ -36,8 +35,7 @@ class _PostCardBottomBarState extends State<PostCardBottomBar> {
     if (user != null) {
       setState(() {
         currentUserId = user.id;
-        isLiked =
-            widget.post.likes?.any((like) => like.userId == user.id) ?? false;
+        isLiked = widget.post.likes?.any((like) => like.userId == user.id) ?? false;
         likeCount = widget.post.likeCount ?? 0;
       });
     }
@@ -45,46 +43,64 @@ class _PostCardBottomBarState extends State<PostCardBottomBar> {
 
   /// ✅ Subscribe to real-time changes in the `likes` table for this post
   void _subscribeToLikeChanges() {
-    if (widget.post.id == null) return; // Ensure post.id is not null
+    if (widget.post.id == null) return;
 
     likeSubscription = supabase
         .from('likes')
-        .stream(
-            primaryKey: ['user_id', 'post_id']) // Listening to likes changes
-        .eq('post_id', widget.post.id!) // Filter for this post
+        .stream(primaryKey: ['user_id', 'post_id']) 
+        .eq('post_id', widget.post.id!)
         .listen((likesData) {
-          if (mounted) {
-            setState(() {
-              likeCount = likesData.length; // ✅ Update like count
-              isLiked = likesData.any((like) =>
-                  like['user_id'] ==
-                  currentUserId); // ✅ Check if the current user liked
-            });
-          }
+      if (mounted) {
+        setState(() {
+          likeCount = likesData.length; // ✅ Update like count in real-time
+          isLiked = likesData.any((like) => like['user_id'] == currentUserId); // ✅ Check if current user liked it
         });
+      }
+    });
   }
 
-  /// ✅ Toggle like (Optimistic UI Update)
+  /// ✅ Toggle like with proper handling
   void _toggleLike() async {
-    if (currentUserId == null) return;
+  if (currentUserId == null) return;
 
-    try {
-      final result = await supabase.rpc<int>('toggle_like',
-          params: {'user_uuid': currentUserId, 'post_id': widget.post.id});
+  final previousLikeState = isLiked;
+  final previousLikeCount = likeCount;
 
+  // Optimistic UI Update
+  setState(() {
+    isLiked = !isLiked;
+    likeCount += isLiked ? 1 : -1;
+  });
+
+  try {
+    final result = await supabase.rpc<int>(
+      'toggle_like',
+      params: {
+        'p_user_id': currentUserId,
+        'p_post_id': widget.post.id is int ? widget.post.id : int.parse(widget.post.id.toString()),
+      },
+    );
+
+    // Ensure state consistency with the database response
+    if (mounted) {
       setState(() {
-        if (result == 1) {
-          isLiked = true;
-          likeCount += 1; // Like added
-        } else if (result == 0) {
-          isLiked = false;
-          likeCount -= 1; // Like removed
-        }
+        isLiked = result > previousLikeCount; // Update like state based on result
+        likeCount = result; // Ensure count is in sync with DB
       });
-    } catch (e) {
-      debugPrint('Error toggling like: $e');
+    }
+  } catch (e) {
+    debugPrint('❌ Error toggling like: $e');
+
+    // Revert UI update on error
+    if (mounted) {
+      setState(() {
+        isLiked = previousLikeState;
+        likeCount = previousLikeCount;
+      });
     }
   }
+}
+
 
   @override
   void dispose() {
@@ -103,13 +119,10 @@ class _PostCardBottomBarState extends State<PostCardBottomBar> {
           );
 
           setState(() {
-            isLiked = updatedPost.likes
-                    ?.any((like) => like.userId == currentUserId) ??
-                false;
+            isLiked = updatedPost.likes?.any((like) => like.userId == currentUserId) ?? false;
             likeCount = updatedPost.likeCount ?? 0;
           });
         } else if (state is LikeError) {
-          // Revert UI update on error
           setState(() {
             isLiked = !isLiked;
             likeCount = isLiked ? likeCount + 1 : likeCount - 1;

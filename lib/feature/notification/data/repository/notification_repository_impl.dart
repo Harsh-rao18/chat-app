@@ -6,13 +6,15 @@ import 'package:fpdart/fpdart.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   final NotificationRemoteDataSource remoteDataSource;
+
   NotificationRepositoryImpl(this.remoteDataSource);
+
   @override
   Future<Either<Failure, List<Notification>>> fetchNotification(
       String userId) async {
     try {
-      final notification = await remoteDataSource.fetchNotication(userId);
-      return right(notification);
+      final notifications = await remoteDataSource.fetchNotification(userId); // ✅ Fixed typo
+      return right(notifications); // ✅ Explicitly returning as List<Notification>
     } catch (e) {
       return left(Failure(e.toString()));
     }

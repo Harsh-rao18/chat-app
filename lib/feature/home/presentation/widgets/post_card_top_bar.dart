@@ -39,11 +39,6 @@ class PostCardTopBar extends StatelessWidget {
               formatDateFromNow(post.createdAt), // Parse string to DateTime
               style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
-            const SizedBox(width: 10),
-            IconButton(
-              icon: const Icon(Icons.more_horiz),
-              onPressed: () {}, // Add menu actions
-            ),
           ],
         ),
       ],

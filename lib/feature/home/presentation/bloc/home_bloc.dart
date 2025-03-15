@@ -10,6 +10,7 @@ import 'package:application_one/feature/home/domain/usecase/fetch_comments.dart'
 import 'package:application_one/feature/home/domain/usecase/fetch_post_usecase.dart';
 import 'package:application_one/feature/home/domain/usecase/toggle_like_usecase.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,19 +39,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<ToggleLikeEvent>(_onToggleLike);
   }
 
-  Future<void> _onFetchPosts(
-      FetchPostsEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onFetchPosts(FetchPostsEvent event, Emitter<HomeState> emit) async {
+    debugPrint("🔄 Fetching posts...");
     emit(HomeLoading());
 
     final result = await _fetchPostUsecase(NoParams());
 
     result.fold(
-      (failure) => emit(HomeError(_mapFailureToMessage(failure))),
-      (posts) => emit(HomeLoaded(posts)),
+      (failure) {
+        debugPrint("❌ Fetch posts failed: ${failure.toString()}");
+        emit(HomeError(_mapFailureToMessage(failure)));
+      },
+      (posts) {
+        debugPrint("✅ Fetch posts success: ${posts.length} posts loaded");
+        emit(HomeLoaded(posts));
+      },
     );
   }
 
   Future<void> _onAddReply(AddReplyEvent event, Emitter<HomeState> emit) async {
+    debugPrint("📝 Adding reply: ${event.reply} for post ${event.postId}");
+
     final response = await _addReplyUsecase(
       AddReplyParams(
         userId: event.userId,
@@ -61,66 +70,80 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     response.fold(
-      (failure) => emit(HomeError(_mapFailureToMessage(failure))),
+      (failure) {
+        debugPrint("❌ Add reply failed: ${failure.toString()}");
+        emit(HomeError(_mapFailureToMessage(failure)));
+      },
       (_) {
+        debugPrint("✅ Reply added successfully. Fetching comments...");
         emit(const ReplyAddSuccess("Reply added successfully"));
         add(FetchCommentsEvent(postId: event.postId));
       },
     );
   }
 
-  Future<void> _onFetchComments(
-      FetchCommentsEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onFetchComments(FetchCommentsEvent event, Emitter<HomeState> emit) async {
+    debugPrint("🔄 Fetching comments for post: ${event.postId}");
     emit(CommentsLoading());
 
-    final result =
-        await _fetchCommentsUsecase(CommentParams(postId: event.postId));
+    final result = await _fetchCommentsUsecase(CommentParams(postId: event.postId));
 
     result.fold(
-      (failure) => emit(CommentsError(_mapFailureToMessage(failure))),
-      (comments) => emit(CommentsLoaded(comments)),
+      (failure) {
+        debugPrint("❌ Fetch comments failed: ${failure.toString()}");
+        emit(CommentsError(_mapFailureToMessage(failure)));
+      },
+      (comments) {
+        debugPrint("✅ Fetch comments success: ${comments.length} comments loaded");
+        emit(CommentsLoaded(comments));
+      },
     );
   }
 
-Future<void> _onToggleLike(ToggleLikeEvent event, Emitter<HomeState> emit) async {
-  final currentState = state;
-  if (currentState is! HomeLoaded) return;
+  Future<void> _onToggleLike(ToggleLikeEvent event, Emitter<HomeState> emit) async {
+    final currentState = state;
+    if (currentState is! HomeLoaded) return;
 
-  emit(LikesLoading()); // ✅ Emit a loading state if needed
+    debugPrint("👍 Toggling like for post ${event.like.postId} by user ${event.like.userId}");
+    emit(LikesLoading());
 
-  final result = await _toggleLikeUseCase(ToggleLikeParams(like: event.like));
+    final result = await _toggleLikeUseCase(ToggleLikeParams(like: event.like));
 
-  result.fold(
-    (failure) => emit(LikeError(failure.toString())), // ✅ Emit error if failed
-    (_) {
-      final updatedPosts = currentState.posts.map((post) {
-        if (post.id == event.like.postId) {
-          final isLiked = post.likes?.any((like) => like.userId == event.like.userId) ?? false;
+    result.fold(
+      (failure) {
+        debugPrint("❌ Toggle like failed: ${failure.toString()}");
+        emit(LikeError(failure.toString()));
+      },
+      (_) {
+        debugPrint("✅ Like toggled successfully");
+        final updatedPosts = currentState.posts.map((post) {
+          if (post.id == event.like.postId) {
+            final isLiked = post.likes?.any((like) => like.userId == event.like.userId) ?? false;
 
-          List<Like> updatedLikes;
-          if (isLiked) {
-            updatedLikes = post.likes!.where((like) => like.userId != event.like.userId).toList();
-          } else {
-            updatedLikes = [...post.likes ?? [], event.like];
+            List<Like> updatedLikes;
+            if (isLiked) {
+              updatedLikes = post.likes!.where((like) => like.userId != event.like.userId).toList();
+            } else {
+              updatedLikes = [...post.likes ?? [], event.like];
+            }
+
+            if (post is PostModel) {
+              return post.copyWith(
+                likes: updatedLikes.map((like) => LikeModel(userId: like.userId, postId: like.postId)).toList(),
+                likeCount: updatedLikes.length,
+              );
+            }
           }
+          return post;
+        }).toList();
 
-          if (post is PostModel) {
-            return post.copyWith(
-              likes: updatedLikes.map((like) => LikeModel(userId: like.userId, postId: like.postId)).toList(),
-              likeCount: updatedLikes.length,
-            );
-          }
-        }
-        return post;
-      }).toList();
-
-      emit(HomeLoaded(updatedPosts)); // ✅ Ensure state is updated properly
-    },
-  );
-}
-
+        emit(HomeLoaded(updatedPosts));
+      },
+    );
+  }
 
   String _mapFailureToMessage(Failure failure) {
-    return "Unexpected error.";
+    debugPrint("⚠️ Failure mapped: ${failure.toString()}");
+    return "Unexpected error: ${failure.toString()}";
   }
 }
